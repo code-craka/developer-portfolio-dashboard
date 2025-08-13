@@ -1,19 +1,439 @@
-<!doctype html>
-<html>
-	<head>
-		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width" />
-		<title>My static Space</title>
-		<link rel="stylesheet" href="style.css" />
-	</head>
-	<body>
-		<div class="card">
-			<h1>Welcome to your static Space!</h1>
-			<p>You can modify this app directly by editing <i>index.html</i> in the Files and versions tab.</p>
-			<p>
-				Also don't forget to check the
-				<a href="https://huggingface.co/docs/hub/spaces" target="_blank">Spaces documentation</a>.
-			</p>
-		</div>
-	</body>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visa Manager App | Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .sidebar {
+            transition: all 0.3s ease;
+        }
+        .task-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+        .progress-bar {
+            transition: width 0.5s ease;
+        }
+        @media (max-width: 768px) {
+            .sidebar {
+                position: absolute;
+                left: -100%;
+                z-index: 50;
+            }
+            .sidebar.active {
+                left: 0;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 font-sans">
+    <div class="flex h-screen overflow-hidden">
+        <!-- Sidebar -->
+        <div class="sidebar bg-indigo-700 text-white w-64 flex-shrink-0">
+            <div class="p-4 flex items-center justify-between border-b border-indigo-600">
+                <div class="flex items-center space-x-2">
+                    <i class="fas fa-passport text-2xl"></i>
+                    <h1 class="text-xl font-bold">Visa Manager</h1>
+                </div>
+                <button id="closeSidebar" class="md:hidden text-xl">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <nav class="p-4">
+                <div class="mb-6">
+                    <h3 class="text-xs uppercase tracking-wider text-indigo-300 mb-3">Navigation</h3>
+                    <ul class="space-y-2">
+                        <li>
+                            <a href="#" class="flex items-center space-x-2 p-2 rounded bg-indigo-800">
+                                <i class="fas fa-tachometer-alt"></i>
+                                <span>Dashboard</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" class="flex items-center space-x-2 p-2 rounded hover:bg-indigo-800">
+                                <i class="fas fa-tasks"></i>
+                                <span>Tasks</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" class="flex items-center space-x-2 p-2 rounded hover:bg-indigo-800">
+                                <i class="fas fa-users"></i>
+                                <span>Clients</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" class="flex items-center space-x-2 p-2 rounded hover:bg-indigo-800">
+                                <i class="fas fa-handshake"></i>
+                                <span>Partners</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" class="flex items-center space-x-2 p-2 rounded hover:bg-indigo-800">
+                                <i class="fas fa-chart-line"></i>
+                                <span>Commissions</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-xs uppercase tracking-wider text-indigo-300 mb-3">Settings</h3>
+                    <ul class="space-y-2">
+                        <li>
+                            <a href="#" class="flex items-center space-x-2 p-2 rounded hover:bg-indigo-800">
+                                <i class="fas fa-user-cog"></i>
+                                <span>Profile</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" class="flex items-center space-x-2 p-2 rounded hover:bg-indigo-800">
+                                <i class="fas fa-cog"></i>
+                                <span>Settings</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+        </div>
+
+        <!-- Main Content -->
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <!-- Top Navigation -->
+            <header class="bg-white shadow-sm z-10">
+                <div class="flex items-center justify-between p-4">
+                    <div class="flex items-center space-x-4">
+                        <button id="toggleSidebar" class="md:hidden text-gray-600">
+                            <i class="fas fa-bars text-xl"></i>
+                        </button>
+                        <h2 class="text-xl font-semibold text-gray-800">Dashboard</h2>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <div class="relative">
+                            <button class="text-gray-600 hover:text-gray-800">
+                                <i class="fas fa-bell text-xl"></i>
+                                <span class="absolute top-0 right-0 h-2 w-2 rounded-full bg-red-500"></span>
+                            </button>
+                        </div>
+                        <div class="relative">
+                            <button class="flex items-center space-x-2">
+                                <div class="h-8 w-8 rounded-full bg-indigo-600 flex items-center justify-center text-white">
+                                    <span>AD</span>
+                                </div>
+                                <span class="hidden md:inline">Admin</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Main Content Area -->
+            <main class="flex-1 overflow-y-auto p-4 md:p-6 bg-gray-50">
+                <!-- Stats Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                    <div class="bg-white rounded-lg shadow p-4">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-gray-500 text-sm">Total Tasks</p>
+                                <h3 class="text-2xl font-bold">142</h3>
+                            </div>
+                            <div class="p-3 rounded-full bg-indigo-100 text-indigo-600">
+                                <i class="fas fa-tasks text-xl"></i>
+                            </div>
+                        </div>
+                        <div class="mt-2">
+                            <span class="text-green-500 text-sm">+12% from last week</span>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow p-4">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-gray-500 text-sm">Pending Tasks</p>
+                                <h3 class="text-2xl font-bold">28</h3>
+                            </div>
+                            <div class="p-3 rounded-full bg-yellow-100 text-yellow-600">
+                                <i class="fas fa-clock text-xl"></i>
+                            </div>
+                        </div>
+                        <div class="mt-2">
+                            <span class="text-red-500 text-sm">-5% from last week</span>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow p-4">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-gray-500 text-sm">Completed Tasks</p>
+                                <h3 class="text-2xl font-bold">114</h3>
+                            </div>
+                            <div class="p-3 rounded-full bg-green-100 text-green-600">
+                                <i class="fas fa-check-circle text-xl"></i>
+                            </div>
+                        </div>
+                        <div class="mt-2">
+                            <span class="text-green-500 text-sm">+18% from last week</span>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow p-4">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-gray-500 text-sm">Active Clients</p>
+                                <h3 class="text-2xl font-bold">63</h3>
+                            </div>
+                            <div class="p-3 rounded-full bg-blue-100 text-blue-600">
+                                <i class="fas fa-users text-xl"></i>
+                            </div>
+                        </div>
+                        <div class="mt-2">
+                            <span class="text-green-500 text-sm">+8% from last week</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Tasks -->
+                <div class="bg-white rounded-lg shadow mb-6">
+                    <div class="p-4 border-b border-gray-200">
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-lg font-semibold">Recent Tasks</h3>
+                            <button class="text-indigo-600 hover:text-indigo-800 text-sm font-medium">
+                                View All
+                            </button>
+                        </div>
+                    </div>
+                    <div class="divide-y divide-gray-200">
+                        <!-- Task Item -->
+                        <div class="task-card p-4 hover:bg-gray-50 cursor-pointer transition">
+                            <div class="flex items-start justify-between">
+                                <div class="flex-1">
+                                    <div class="flex items-center space-x-2">
+                                        <span class="px-2 py-1 text-xs rounded-full bg-green-100 text-green-800">Completed</span>
+                                        <span class="text-xs text-gray-500">#TASK-1245</span>
+                                    </div>
+                                    <h4 class="mt-1 font-medium">Medical Examination - John Smith</h4>
+                                    <p class="text-sm text-gray-500 mt-1">Client ID: CS-4589 | Partner: MediCare Clinic</p>
+                                    <div class="mt-2 flex items-center space-x-4">
+                                        <div class="flex items-center space-x-1 text-sm text-gray-500">
+                                            <i class="far fa-calendar-alt"></i>
+                                            <span>Due: May 15, 2023</span>
+                                        </div>
+                                        <div class="flex items-center space-x-1 text-sm text-gray-500">
+                                            <i class="far fa-money-bill-alt"></i>
+                                            <span>Commission: $120</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    <button class="p-2 rounded-full hover:bg-gray-200">
+                                        <i class="fas fa-ellipsis-v text-gray-500"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Task Item -->
+                        <div class="task-card p-4 hover:bg-gray-50 cursor-pointer transition">
+                            <div class="flex items-start justify-between">
+                                <div class="flex-1">
+                                    <div class="flex items-center space-x-2">
+                                        <span class="px-2 py-1 text-xs rounded-full bg-yellow-100 text-yellow-800">In Progress</span>
+                                        <span class="text-xs text-gray-500">#TASK-1244</span>
+                                    </div>
+                                    <h4 class="mt-1 font-medium">Fingerprinting - Sarah Johnson</h4>
+                                    <p class="text-sm text-gray-500 mt-1">Client ID: CS-4588 | Partner: BioMetrics Inc.</p>
+                                    <div class="mt-2 flex items-center space-x-4">
+                                        <div class="flex items-center space-x-1 text-sm text-gray-500">
+                                            <i class="far fa-calendar-alt"></i>
+                                            <span>Due: May 12, 2023</span>
+                                        </div>
+                                        <div class="flex items-center space-x-1 text-sm text-gray-500">
+                                            <i class="far fa-money-bill-alt"></i>
+                                            <span>Commission: $85</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    <button class="p-2 rounded-full hover:bg-gray-200">
+                                        <i class="fas fa-ellipsis-v text-gray-500"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Task Item -->
+                        <div class="task-card p-4 hover:bg-gray-50 cursor-pointer transition">
+                            <div class="flex items-start justify-between">
+                                <div class="flex-1">
+                                    <div class="flex items-center space-x-2">
+                                        <span class="px-2 py-1 text-xs rounded-full bg-red-100 text-red-800">Overdue</span>
+                                        <span class="text-xs text-gray-500">#TASK-1243</span>
+                                    </div>
+                                    <h4 class="mt-1 font-medium">Document Verification - Michael Brown</h4>
+                                    <p class="text-sm text-gray-500 mt-1">Client ID: CS-4587 | Partner: DocVerify Services</p>
+                                    <div class="mt-2 flex items-center space-x-4">
+                                        <div class="flex items-center space-x-1 text-sm text-gray-500">
+                                            <i class="far fa-calendar-alt"></i>
+                                            <span>Due: May 10, 2023</span>
+                                        </div>
+                                        <div class="flex items-center space-x-1 text-sm text-gray-500">
+                                            <i class="far fa-money-bill-alt"></i>
+                                            <span>Commission: $60</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    <button class="p-2 rounded-full hover:bg-gray-200">
+                                        <i class="fas fa-ellipsis-v text-gray-500"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Progress and Activity -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- Task Progress -->
+                    <div class="bg-white rounded-lg shadow p-4">
+                        <h3 class="text-lg font-semibold mb-4">Task Completion Rate</h3>
+                        <div class="space-y-4">
+                            <div>
+                                <div class="flex justify-between mb-1">
+                                    <span class="text-sm font-medium text-gray-700">Medical Exams</span>
+                                    <span class="text-sm font-medium text-gray-700">85%</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-2.5">
+                                    <div class="progress-bar bg-green-600 h-2.5 rounded-full" style="width: 85%"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between mb-1">
+                                    <span class="text-sm font-medium text-gray-700">Fingerprinting</span>
+                                    <span class="text-sm font-medium text-gray-700">72%</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-2.5">
+                                    <div class="progress-bar bg-blue-600 h-2.5 rounded-full" style="width: 72%"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between mb-1">
+                                    <span class="text-sm font-medium text-gray-700">Document Verification</span>
+                                    <span class="text-sm font-medium text-gray-700">65%</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-2.5">
+                                    <div class="progress-bar bg-yellow-500 h-2.5 rounded-full" style="width: 65%"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between mb-1">
+                                    <span class="text-sm font-medium text-gray-700">Interviews</span>
+                                    <span class="text-sm font-medium text-gray-700">91%</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-2.5">
+                                    <div class="progress-bar bg-indigo-600 h-2.5 rounded-full" style="width: 91%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Activity -->
+                    <div class="bg-white rounded-lg shadow p-4">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-semibold">Recent Activity</h3>
+                            <button class="text-indigo-600 hover:text-indigo-800 text-sm font-medium">
+                                View All
+                            </button>
+                        </div>
+                        <div class="space-y-4">
+                            <div class="flex items-start space-x-3">
+                                <div class="flex-shrink-0 mt-1">
+                                    <div class="h-8 w-8 rounded-full bg-green-100 flex items-center justify-center text-green-600">
+                                        <i class="fas fa-check"></i>
+                                    </div>
+                                </div>
+                                <div>
+                                    <p class="text-sm">
+                                        <span class="font-medium">Medical Examination</span> for <span class="font-medium">John Smith</span> was completed by <span class="font-medium">MediCare Clinic</span>
+                                    </p>
+                                    <p class="text-xs text-gray-500 mt-1">2 hours ago</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start space-x-3">
+                                <div class="flex-shrink-0 mt-1">
+                                    <div class="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600">
+                                        <i class="fas fa-plus"></i>
+                                    </div>
+                                </div>
+                                <div>
+                                    <p class="text-sm">
+                                        New task <span class="font-medium">Fingerprinting</span> was assigned to <span class="font-medium">BioMetrics Inc.</span> for <span class="font-medium">Sarah Johnson</span>
+                                    </p>
+                                    <p class="text-xs text-gray-500 mt-1">5 hours ago</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start space-x-3">
+                                <div class="flex-shrink-0 mt-1">
+                                    <div class="h-8 w-8 rounded-full bg-yellow-100 flex items-center justify-center text-yellow-600">
+                                        <i class="fas fa-exclamation"></i>
+                                    </div>
+                                </div>
+                                <div>
+                                    <p class="text-sm">
+                                        Task <span class="font-medium">Document Verification</span> for <span class="font-medium">Michael Brown</span> is overdue by 2 days
+                                    </p>
+                                    <p class="text-xs text-gray-500 mt-1">1 day ago</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start space-x-3">
+                                <div class="flex-shrink-0 mt-1">
+                                    <div class="h-8 w-8 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600">
+                                        <i class="fas fa-user-plus"></i>
+                                    </div>
+                                </div>
+                                <div>
+                                    <p class="text-sm">
+                                        New client <span class="font-medium">Robert Wilson</span> was added to the system
+                                    </p>
+                                    <p class="text-xs text-gray-500 mt-1">2 days ago</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        // Toggle sidebar on mobile
+        const toggleSidebar = document.getElementById('toggleSidebar');
+        const closeSidebar = document.getElementById('closeSidebar');
+        const sidebar = document.querySelector('.sidebar');
+
+        toggleSidebar.addEventListener('click', () => {
+            sidebar.classList.add('active');
+        });
+
+        closeSidebar.addEventListener('click', () => {
+            sidebar.classList.remove('active');
+        });
+
+        // Simulate loading progress bars
+        document.addEventListener('DOMContentLoaded', () => {
+            const progressBars = document.querySelectorAll('.progress-bar');
+            progressBars.forEach(bar => {
+                const width = bar.style.width;
+                bar.style.width = '0';
+                setTimeout(() => {
+                    bar.style.width = width;
+                }, 100);
+            });
+        });
+
+        // Task card click handler (for demonstration)
+        const taskCards = document.querySelectorAll('.task-card');
+        taskCards.forEach(card => {
+            card.addEventListener('click', () => {
+                alert('Task details would open in a modal or separate page in the full application.');
+            });
+        });
+    </script>
+<p style="border-radius: 8px; text-align: center; font-size: 12px; color: #fff; margin-top: 16px;position: fixed; left: 8px; bottom: 8px; z-index: 10; background: rgba(0, 0, 0, 0.8); padding: 4px 8px;">Made with <img src="https://enzostvs-deepsite.hf.space/logo.svg" alt="DeepSite Logo" style="width: 16px; height: 16px; vertical-align: middle;display:inline-block;margin-right:3px;filter:brightness(0) invert(1);"><a href="https://enzostvs-deepsite.hf.space" style="color: #fff;text-decoration: underline;" target="_blank" >DeepSite</a> - 🧬 <a href="https://enzostvs-deepsite.hf.space?remix=code-craka/visa-manager" style="color: #fff;text-decoration: underline;" target="_blank" >Remix</a></p></body>
 </html>
