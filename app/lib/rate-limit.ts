@@ -64,12 +64,17 @@ class RateLimiter {
 // Create rate limiters for different endpoints
 export const apiRateLimit = new RateLimiter({
   interval: 60 * 1000, // 1 minute
-  uniqueTokenPerInterval: 100 // 100 requests per minute
+  uniqueTokenPerInterval: 100 // 100 requests per minute for public API
 })
 
-export const authRateLimit = new RateLimiter({
+export const adminApiRateLimit = new RateLimiter({
+  interval: 60 * 1000, // 1 minute
+  uniqueTokenPerInterval: 200 // 200 requests per minute for admin operations
+})
+
+export const contactFormRateLimit = new RateLimiter({
   interval: 15 * 60 * 1000, // 15 minutes
-  uniqueTokenPerInterval: 5 // 5 login attempts per 15 minutes
+  uniqueTokenPerInterval: 3 // 3 contact form submissions per 15 minutes
 })
 
 export const uploadRateLimit = new RateLimiter({
@@ -107,6 +112,7 @@ export function withRateLimit(
 // Cleanup function to be called periodically
 setInterval(() => {
   apiRateLimit.cleanup()
-  authRateLimit.cleanup()
+  adminApiRateLimit.cleanup()
+  contactFormRateLimit.cleanup()
   uploadRateLimit.cleanup()
 }, 5 * 60 * 1000) // Cleanup every 5 minutes

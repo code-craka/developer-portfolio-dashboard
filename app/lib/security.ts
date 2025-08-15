@@ -1,36 +1,24 @@
 import { NextRequest } from 'next/server'
+import { ContactFormData, ProjectFormData, ExperienceFormData } from './types'
 
-// Security configuration
+// Security configuration for the developer portfolio dashboard
+// Using Clerk authentication and NeonDB PostgreSQL
 export const SECURITY_CONFIG = {
-  // JWT Configuration
-  JWT: {
-    SECRET_MIN_LENGTH: 32,
-    EXPIRES_IN: '7d',
-    ALGORITHM: 'HS256' as const,
-  },
-  
-  // Password Configuration
-  PASSWORD: {
-    MIN_LENGTH: 8,
-    REQUIRE_UPPERCASE: true,
-    REQUIRE_LOWERCASE: true,
-    REQUIRE_NUMBERS: true,
-    REQUIRE_SPECIAL_CHARS: true,
-    SALT_ROUNDS: 12,
-  },
-  
   // File Upload Configuration
   UPLOAD: {
-    MAX_FILE_SIZE: 5 * 1024 * 1024, // 5MB
-    ALLOWED_TYPES: ['image/jpeg', 'image/png', 'image/webp', 'image/gif'],
-    MAX_FILES_PER_REQUEST: 5,
+    MAX_FILE_SIZE: 5 * 1024 * 1024, // 5MB for projects
+    MAX_LOGO_SIZE: 2 * 1024 * 1024, // 2MB for company logos
+    ALLOWED_TYPES: ['image/jpeg', 'image/png', 'image/webp'],
+    ALLOWED_LOGO_TYPES: ['image/jpeg', 'image/png', 'image/webp', 'image/svg+xml'],
+    MAX_FILES_PER_REQUEST: 1, // Single file upload
   },
   
   // Rate Limiting Configuration
   RATE_LIMIT: {
     API_REQUESTS_PER_MINUTE: 100,
-    AUTH_ATTEMPTS_PER_15_MIN: 5,
+    CONTACT_FORM_PER_15_MIN: 3, // Contact form submissions
     UPLOAD_REQUESTS_PER_MINUTE: 10,
+    ADMIN_API_PER_MINUTE: 200, // Higher limit for admin operations
   },
   
   // CORS Configuration
@@ -49,32 +37,100 @@ export function validateEmail(email: string): boolean {
   return emailRegex.test(email) && email.length <= 254
 }
 
-export function validatePassword(password: string): { valid: boolean; errors: string[] } {
+// Validation functions for form data
+export function validateProjectData(data: ProjectFormData): { valid: boolean; errors: string[] } {
   const errors: string[] = []
   
-  if (password.length < SECURITY_CONFIG.PASSWORD.MIN_LENGTH) {
-    errors.push(`Password must be at least ${SECURITY_CONFIG.PASSWORD.MIN_LENGTH} characters long`)
+  if (!data.title || data.title.trim().length < 3) {
+    errors.push('Project title must be at least 3 characters long')
   }
   
-  if (SECURITY_CONFIG.PASSWORD.REQUIRE_UPPERCASE && !/[A-Z]/.test(password)) {
-    errors.push('Password must contain at least one uppercase letter')
+  if (!data.description || data.description.trim().length < 10) {
+    errors.push('Project description must be at least 10 characters long')
   }
   
-  if (SECURITY_CONFIG.PASSWORD.REQUIRE_LOWERCASE && !/[a-z]/.test(password)) {
-    errors.push('Password must contain at least one lowercase letter')
+  if (!data.techStack || data.techStack.length === 0) {
+    errors.push('At least one technology must be specified')
   }
   
-  if (SECURITY_CONFIG.PASSWORD.REQUIRE_NUMBERS && !/\d/.test(password)) {
-    errors.push('Password must contain at least one number')
+  if (data.githubUrl && !isValidUrl(data.githubUrl)) {
+    errors.push('GitHub URL must be a valid URL')
   }
   
-  if (SECURITY_CONFIG.PASSWORD.REQUIRE_SPECIAL_CHARS && !/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
-    errors.push('Password must contain at least one special character')
+  if (data.demoUrl && !isValidUrl(data.demoUrl)) {
+    errors.push('Demo URL must be a valid URL')
   }
   
   return {
     valid: errors.length === 0,
     errors
+  }
+}
+
+export function validateContactData(data: ContactFormData): { valid: boolean; errors: string[] } {
+  const errors: string[] = []
+  
+  if (!data.name || data.name.trim().length < 2) {
+    errors.push('Name must be at least 2 characters long')
+  }
+  
+  if (!data.email || !validateEmail(data.email)) {
+    errors.push('Valid email address is required')
+  }
+  
+  if (!data.message || data.message.trim().length < 10) {
+    errors.push('Message must be at least 10 characters long')
+  }
+  
+  return {
+    valid: errors.length === 0,
+    errors
+  }
+}
+
+export function validateExperienceData(data: ExperienceFormData): { valid: boolean; errors: string[] } {
+  const errors: string[] = []
+  
+  if (!data.company || data.company.trim().length < 2) {
+    errors.push('Company name must be at least 2 characters long')
+  }
+  
+  if (!data.position || data.position.trim().length < 2) {
+    errors.push('Position title must be at least 2 characters long')
+  }
+  
+  if (!data.startDate) {
+    errors.push('Start date is required')
+  }
+  
+  if (data.endDate && data.startDate && data.endDate < data.startDate) {
+    errors.push('End date cannot be before start date')
+  }
+  
+  if (!data.description || data.description.trim().length < 10) {
+    errors.push('Description must be at least 10 characters long')
+  }
+  
+  if (!data.location || data.location.trim().length < 2) {
+    errors.push('Location is required')
+  }
+  
+  if (!data.employmentType) {
+    errors.push('Employment type is required')
+  }
+  
+  return {
+    valid: errors.length === 0,
+    errors
+  }
+}
+
+function isValidUrl(url: string): boolean {
+  try {
+    new URL(url)
+    return true
+  } catch {
+    return false
   }
 }
 
@@ -87,19 +143,30 @@ export function sanitizeInput(input: string): string {
     .trim()
 }
 
-// Validate file upload
-export function validateFileUpload(file: File): { valid: boolean; error?: string } {
-  if (file.size > SECURITY_CONFIG.UPLOAD.MAX_FILE_SIZE) {
+// Validate file upload for projects
+export function validateFileUpload(file: File, isLogo: boolean = false): { valid: boolean; error?: string } {
+  const maxSize = isLogo ? SECURITY_CONFIG.UPLOAD.MAX_LOGO_SIZE : SECURITY_CONFIG.UPLOAD.MAX_FILE_SIZE
+  const allowedTypes = isLogo ? SECURITY_CONFIG.UPLOAD.ALLOWED_LOGO_TYPES : SECURITY_CONFIG.UPLOAD.ALLOWED_TYPES
+  
+  if (file.size > maxSize) {
     return {
       valid: false,
-      error: `File size exceeds maximum allowed size of ${SECURITY_CONFIG.UPLOAD.MAX_FILE_SIZE / (1024 * 1024)}MB`
+      error: `File size exceeds maximum allowed size of ${maxSize / (1024 * 1024)}MB`
     }
   }
   
-  if (!SECURITY_CONFIG.UPLOAD.ALLOWED_TYPES.includes(file.type)) {
+  if (!allowedTypes.includes(file.type)) {
     return {
       valid: false,
-      error: `File type ${file.type} is not allowed. Allowed types: ${SECURITY_CONFIG.UPLOAD.ALLOWED_TYPES.join(', ')}`
+      error: `File type ${file.type} is not allowed. Allowed types: ${allowedTypes.join(', ')}`
+    }
+  }
+  
+  // Additional validation for file name
+  if (file.name.length > 255) {
+    return {
+      valid: false,
+      error: 'File name is too long (maximum 255 characters)'
     }
   }
   
@@ -136,7 +203,27 @@ export const SECURITY_HEADERS = {
   'X-Frame-Options': 'DENY',
   'X-XSS-Protection': '1; mode=block',
   'Referrer-Policy': 'strict-origin-when-cross-origin',
-  'Content-Security-Policy': "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:;",
+  'Content-Security-Policy': "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline' https://clerk.dev https://*.clerk.accounts.dev; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https: blob:; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' https://clerk.dev https://*.clerk.accounts.dev https://*.neon.tech;",
   'Strict-Transport-Security': 'max-age=31536000; includeSubDomains',
   'Permissions-Policy': 'camera=(), microphone=(), geolocation=()'
+}
+
+// Utility to generate secure file names
+export function generateSecureFileName(originalName: string): string {
+  const timestamp = Date.now()
+  const randomString = generateSecureToken(8)
+  const extension = originalName.split('.').pop()?.toLowerCase() || ''
+  const baseName = originalName.split('.')[0].replace(/[^a-zA-Z0-9]/g, '-').toLowerCase()
+  
+  return `${baseName}-${timestamp}-${randomString}.${extension}`
+}
+
+// SQL injection prevention helper
+export function sanitizeSqlInput(input: string): string {
+  return input
+    .replace(/['";\\]/g, '') // Remove SQL injection characters
+    .replace(/--/g, '') // Remove SQL comments
+    .replace(/\/\*/g, '') // Remove SQL block comments start
+    .replace(/\*\//g, '') // Remove SQL block comments end
+    .trim()
 }
