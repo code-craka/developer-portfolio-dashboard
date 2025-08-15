@@ -1,19 +1,31 @@
-import { neon } from '@neondatabase/serverless';
+import { neon, NeonQueryFunction } from '@neondatabase/serverless';
 
-if (!process.env.DATABASE_URL) {
-  throw new Error('DATABASE_URL environment variable is not set');
-}
+// Get database URL from environment variables
+const getDatabaseUrl = () => {
+  const url = process.env.DATABASE_URL || process.env.DATABASE_AUTHENTICATED_URL;
+  if (!url) {
+    throw new Error('DATABASE_URL or DATABASE_AUTHENTICATED_URL environment variable is not set');
+  }
+  return url;
+};
 
-// Create NeonDB connection
-const sql = neon(process.env.DATABASE_URL);
+// Create NeonDB connection lazily
+let sql: NeonQueryFunction<boolean, boolean> | null = null;
+
+const getSql = (): NeonQueryFunction<boolean, boolean> => {
+  if (!sql) {
+    sql = neon(getDatabaseUrl());
+  }
+  return sql;
+};
 
 // Database connection utility with error handling
 export class DatabaseConnection {
   private static instance: DatabaseConnection;
-  private sql: typeof sql;
+  private sql: NeonQueryFunction<boolean, boolean>;
 
   private constructor() {
-    this.sql = sql;
+    this.sql = getSql();
   }
 
   public static getInstance(): DatabaseConnection {
@@ -37,7 +49,8 @@ export class DatabaseConnection {
   // Test database connection
   async testConnection(): Promise<boolean> {
     try {
-      await this.sql`SELECT 1 as test`;
+      const sql = getSql();
+      await sql`SELECT 1 as test`;
       return true;
     } catch (error) {
       console.error('Database connection test failed:', error);
@@ -51,8 +64,21 @@ export class DatabaseConnection {
   }
 }
 
-// Export singleton instance
-export const db = DatabaseConnection.getInstance();
+// Export singleton instance getter
+export const db = {
+  get instance() {
+    return DatabaseConnection.getInstance();
+  },
+  query: async <T = any>(query: string, params: any[] = []): Promise<T[]> => {
+    return DatabaseConnection.getInstance().query<T>(query, params);
+  },
+  testConnection: async (): Promise<boolean> => {
+    return DatabaseConnection.getInstance().testConnection();
+  },
+  getConnection: () => {
+    return DatabaseConnection.getInstance().getConnection();
+  }
+};
 
 // Export direct SQL connection for advanced use cases
-export { sql };
+export { getSql as sql };

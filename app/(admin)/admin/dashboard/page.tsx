@@ -1,13 +1,19 @@
 import { UserButton } from '@clerk/nextjs'
-import { getCurrentUser } from '@/app/lib/clerk'
-import { redirect } from 'next/navigation'
+import { requireAdminAuth, getCurrentAdmin } from '@/app/lib/clerk'
 
 export default async function AdminDashboard() {
-  const user = await getCurrentUser()
+  // Require admin authentication and role verification
+  await requireAdminAuth()
   
-  if (!user) {
-    redirect('/admin/login')
+  // Get current admin data
+  const adminContext = await getCurrentAdmin()
+  
+  if (!adminContext?.clerkUser) {
+    // This shouldn't happen due to requireAdminAuth, but just in case
+    throw new Error('Authentication failed')
   }
+  
+  const { clerkUser, adminData } = adminContext
 
   return (
     <div className="min-h-screen bg-dark-bg">
@@ -21,9 +27,16 @@ export default async function AdminDashboard() {
               </h1>
             </div>
             <div className="flex items-center space-x-4">
-              <span className="text-gray-300">
-                Welcome, {user.firstName || user.emailAddresses[0]?.emailAddress}
-              </span>
+              <div className="text-right">
+                <div className="text-gray-300">
+                  Welcome, {clerkUser.firstName || clerkUser.emailAddresses[0]?.emailAddress}
+                </div>
+                {adminData && (
+                  <div className="text-xs text-gray-400">
+                    Role: {adminData.role}
+                  </div>
+                )}
+              </div>
               <UserButton 
                 appearance={{
                   elements: {

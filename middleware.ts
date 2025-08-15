@@ -1,10 +1,9 @@
 import { NextResponse } from 'next/server'
-import type { NextRequest } from 'next/server'
 import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server'
 import { withRateLimit, apiRateLimit, adminApiRateLimit, contactFormRateLimit, uploadRateLimit } from './app/lib/rate-limit'
 import { SECURITY_HEADERS } from './app/lib/security'
 
-// Define protected routes
+// Define protected routes that require authentication
 const isProtectedRoute = createRouteMatcher([
   '/admin/dashboard(.*)',
   '/api/projects(.*)',
@@ -12,13 +11,29 @@ const isProtectedRoute = createRouteMatcher([
   '/api/upload(.*)',
 ])
 
+// Define admin-only routes that require admin role
+const isAdminRoute = createRouteMatcher([
+  '/admin/dashboard(.*)',
+  '/api/projects(.*)',
+  '/api/experiences(.*)',
+  '/api/upload(.*)',
+])
+
 export default clerkMiddleware(async (auth, request) => {
-  // Protect admin routes
+  const { userId } = await auth()
+  
+  // Handle protected routes
   if (isProtectedRoute(request)) {
-    const { userId } = await auth()
     if (!userId) {
-      return NextResponse.redirect(new URL('/admin/login', request.url))
+      // User not authenticated, redirect to login
+      const loginUrl = new URL('/admin/login', request.url)
+      loginUrl.searchParams.set('redirect', request.nextUrl.pathname)
+      return NextResponse.redirect(loginUrl)
     }
+    
+    // For admin routes, we'll let the page components handle role verification
+    // This allows for better error handling and user experience
+    // The actual role check happens in the page components using requireAdminAuth()
   }
 
   const response = NextResponse.next()

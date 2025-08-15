@@ -1,4 +1,5 @@
 import { ReactNode } from 'react'
+import { ClerkProvider } from '@clerk/nextjs'
 
 interface AdminLayoutProps {
   children: ReactNode
@@ -6,8 +7,10 @@ interface AdminLayoutProps {
 
 export default function AdminLayout({ children }: AdminLayoutProps) {
   return (
-    <div className="min-h-screen bg-dark-bg">
-      {children}
-    </div>
+    <ClerkProvider>
+      <div className="min-h-screen bg-dark-bg">
+        {children}
+      </div>
+    </ClerkProvider>
   )
 }

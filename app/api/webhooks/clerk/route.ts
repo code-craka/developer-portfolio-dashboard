@@ -1,9 +1,30 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { Webhook } from 'svix'
 import { WebhookEvent } from '@clerk/nextjs/server'
-import { neon } from '@neondatabase/serverless'
+import { AdminService } from '@/app/lib/admin-service'
 
-const sql = neon(process.env.DATABASE_URL!)
+// Type guards for webhook data
+interface UserWebhookData {
+  id: string
+  email_addresses?: Array<{ email_address: string }>
+  first_name?: string
+  last_name?: string
+}
+
+interface SessionWebhookData {
+  id: string
+  user_id: string
+}
+
+function isUserWebhookData(data: any): data is UserWebhookData {
+  return data && typeof data.id === 'string' && (
+    data.email_addresses || data.first_name || data.last_name
+  )
+}
+
+function isSessionWebhookData(data: any): data is SessionWebhookData {
+  return data && typeof data.id === 'string' && typeof data.user_id === 'string'
+}
 
 export async function POST(req: NextRequest) {
   // Get the headers
@@ -14,6 +35,7 @@ export async function POST(req: NextRequest) {
 
   // If there are no headers, error out
   if (!svix_id || !svix_timestamp || !svix_signature) {
+    console.error('Missing Svix headers')
     return new NextResponse('Error occurred -- no svix headers', {
       status: 400,
     })
@@ -21,7 +43,6 @@ export async function POST(req: NextRequest) {
 
   // Get the body
   const payload = await req.text()
-  const body = JSON.parse(payload)
 
   // Create a new Svix instance with your secret.
   const wh = new Webhook(process.env.CLERK_WEBHOOK_SECRET || '')
@@ -37,53 +58,65 @@ export async function POST(req: NextRequest) {
     }) as WebhookEvent
   } catch (err) {
     console.error('Error verifying webhook:', err)
-    return new NextResponse('Error occurred', {
+    return new NextResponse('Error occurred -- webhook verification failed', {
       status: 400,
     })
   }
 
   // Handle the webhook
-  const { id } = evt.data
   const eventType = evt.type
+  const userData = evt.data
+
+  console.log(`Processing Clerk webhook: ${eventType} for user: ${userData.id}`)
 
   try {
     switch (eventType) {
       case 'user.created':
-        // Create admin user in database
-        await sql`
-          INSERT INTO admins (clerk_id, email, name, role, created_at, updated_at)
-          VALUES (
-            ${evt.data.id},
-            ${evt.data.email_addresses[0]?.email_address || ''},
-            ${`${evt.data.first_name || ''} ${evt.data.last_name || ''}`.trim()},
-            'admin',
-            NOW(),
-            NOW()
-          )
-          ON CONFLICT (clerk_id) DO NOTHING
-        `
-        console.log(`Admin user created: ${evt.data.id}`)
-        break
-
       case 'user.updated':
-        // Update admin user in database
-        await sql`
-          UPDATE admins 
-          SET 
-            email = ${evt.data.email_addresses[0]?.email_address || ''},
-            name = ${`${evt.data.first_name || ''} ${evt.data.last_name || ''}`.trim()},
-            updated_at = NOW()
-          WHERE clerk_id = ${evt.data.id}
-        `
-        console.log(`Admin user updated: ${evt.data.id}`)
+        {
+          if (!isUserWebhookData(userData)) {
+            throw new Error(`Invalid user data for ${eventType}`)
+          }
+          
+          const email = userData.email_addresses?.[0]?.email_address || ''
+          const name = `${userData.first_name || ''} ${userData.last_name || ''}`.trim() || email
+          
+          const admin = await AdminService.upsertAdmin(userData.id, email, name)
+          console.log(`Admin user ${eventType === 'user.created' ? 'created' : 'updated'}:`, {
+            clerkId: admin.clerkId,
+            email: admin.email,
+            name: admin.name,
+            role: admin.role
+          })
+        }
         break
 
       case 'user.deleted':
-        // Delete admin user from database
-        await sql`
-          DELETE FROM admins WHERE clerk_id = ${evt.data.id}
-        `
-        console.log(`Admin user deleted: ${evt.data.id}`)
+        {
+          if (!userData.id) {
+            throw new Error('Invalid user data for user.deleted')
+          }
+          
+          const deleted = await AdminService.deleteAdmin(userData.id as string)
+          if (deleted) {
+            console.log(`Admin user deleted: ${userData.id}`)
+          } else {
+            console.log(`Admin user not found for deletion: ${userData.id}`)
+          }
+        }
+        break
+
+      case 'session.created':
+      case 'session.ended':
+        {
+          if (!isSessionWebhookData(userData)) {
+            console.log(`Invalid session data for ${eventType}`)
+            break
+          }
+          
+          console.log(`User session ${eventType === 'session.created' ? 'created' : 'ended'}: ${userData.user_id}`)
+          // Update last login time could be added here if needed
+        }
         break
 
       default:
@@ -92,7 +125,9 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ 
       success: true, 
-      message: `Webhook ${eventType} processed successfully` 
+      message: `Webhook ${eventType} processed successfully`,
+      eventType,
+      userId: userData.id || 'unknown'
     })
   } catch (error) {
     console.error('Error processing webhook:', error)
@@ -100,6 +135,8 @@ export async function POST(req: NextRequest) {
       { 
         success: false, 
         error: 'Failed to process webhook',
+        eventType,
+        userId: userData.id || 'unknown',
         details: error instanceof Error ? error.message : 'Unknown error'
       },
       { status: 500 }
