@@ -7,7 +7,7 @@ A modern, full-stack developer portfolio with an integrated admin dashboard buil
 - 🎨 Modern dark theme with glassmorphism design
 - ⚡ Electric blue accents and smooth animations
 - 📱 Fully responsive design
-- 🔐 Secure admin authentication with Clerk
+- 🔐 Secure admin authentication with Clerk v6 (Next.js 15 compatible)
 - 📊 Admin dashboard for content management
 - 🖼️ Image upload and optimization
 - 🎭 Framer Motion animations
@@ -15,6 +15,8 @@ A modern, full-stack developer portfolio with an integrated admin dashboard buil
 - 🗄️ PostgreSQL database with NeonDB
 - 🔄 Database migrations and health monitoring
 - 🛡️ Rate limiting and security features
+- 🔒 Route protection with middleware
+- 📡 Webhook integration for user management
 
 ## Tech Stack
 
@@ -22,7 +24,7 @@ A modern, full-stack developer portfolio with an integrated admin dashboard buil
 - **Styling**: TailwindCSS with custom dark theme
 - **Animations**: Framer Motion
 - **Database**: NeonDB (PostgreSQL) with connection pooling
-- **Authentication**: Clerk Authentication
+- **Authentication**: Clerk Authentication v6.31.1
 - **ORM**: Custom TypeScript services with raw SQL
 - **Image Optimization**: Next.js Image component
 - **Rate Limiting**: Custom rate limiting implementation

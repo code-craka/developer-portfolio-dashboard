@@ -16,9 +16,9 @@ The application uses NeonDB (PostgreSQL) as the primary database with the follow
 ### Tables
 
 1. **projects** - Portfolio projects
-2. **experiences** - Work experience entries
+2. **experiences** - Work experience entries  
 3. **contacts** - Contact form submissions
-4. **admins** - Admin users (integrated with Clerk)
+4. **admins** - Admin users (synced with Clerk via webhooks)
 
 ### Key Features
 
@@ -198,7 +198,7 @@ The following indexes are automatically created for optimal performance:
 - `idx_contacts_read` - Read status filtering
 
 **Admins Table:**
-- `idx_admins_clerk_id` - Unique Clerk ID lookup
+- `idx_admins_clerk_id` - Unique Clerk ID lookup (UNIQUE)
 - `idx_admins_email` - Email lookup
 
 ### Query Optimization
