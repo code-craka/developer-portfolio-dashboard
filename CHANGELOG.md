@@ -11,13 +11,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Complete Clerk Authentication setup with Next.js 15 compatibility
 - Admin login page with glassmorphism design
 - Admin dashboard with user profile integration
+- Admin sign-up page with matching design
+- Admin profile management page with Clerk UserProfile
 - Clerk webhook handler for user management
 - Database admins table with proper indexes
 - Authentication utilities for server-side auth
 - Route protection middleware for admin areas
 - Comprehensive test script for Clerk setup verification
+- Enhanced admin navigation component with responsive design
 
 ### Changed
+- **BREAKING**: Refactored project structure to follow Next.js 15+ App Router best practices
+- Moved `/app/components/` to root-level `/components/`
+- Moved `/app/lib/` to root-level `/lib/`
+- Moved static HTML files to `/public/`
+- Updated all import paths to use new structure (`@/lib/*`, `@/components/*`)
+- Restructured admin routes: removed duplicate `/admin/admin/` nesting
+- Updated documentation to reflect new structure
 - Upgraded Clerk from v5.0.0 to v6.31.1 for Next.js 15 compatibility
 - Updated middleware to use async auth API
 - Fixed headers() async API compatibility issues
@@ -29,13 +39,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed Clerk middleware authentication flow
 - Corrected TypeScript compilation issues
 - Fixed database initialization script environment loading
+- Removed duplicate admin-service.ts file
+- Fixed all import resolution issues after refactoring
 
 ### Technical Details
-- **Clerk Authentication**: Fully integrated with custom dark theme styling
+- **Project Structure**: Now follows Next.js 15+ App Router best practices with clean separation of concerns
+- **Import Patterns**: Consistent use of TypeScript path aliases for maintainable code
+- **Route Organization**: Clean admin route structure using route groups `(admin)`
+- **Clerk Authentication**: Fully integrated with custom glassmorphism dark theme styling
 - **Database Integration**: Admins table synced via webhooks
-- **Route Protection**: Middleware protects `/admin/dashboard`, `/api/projects`, `/api/experiences`, `/api/upload`
+- **Route Protection**: Middleware protects admin areas and API endpoints
 - **Error Handling**: Graceful redirects for unauthenticated users
 - **Type Safety**: Comprehensive TypeScript interfaces for auth flows
+- **Build Verification**: Project builds successfully with no TypeScript errors
 
 ## [0.1.0] - 2025-01-15
 

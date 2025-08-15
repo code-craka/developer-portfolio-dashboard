@@ -76,9 +76,9 @@ async function testClerkSetup() {
   const path = await import('path')
   
   const requiredFiles = [
-    'app/lib/clerk.ts',
-    'app/(admin)/admin/login/page.tsx',
-    'app/(admin)/admin/dashboard/page.tsx',
+    'lib/clerk.ts',
+    'app/(admin)/login/page.tsx',
+    'app/(admin)/dashboard/page.tsx',
     'app/api/webhooks/clerk/route.ts',
     'middleware.ts'
   ]

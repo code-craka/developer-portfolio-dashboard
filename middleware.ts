@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server'
-import { withRateLimit, apiRateLimit, adminApiRateLimit, contactFormRateLimit, uploadRateLimit } from './app/lib/rate-limit'
-import { SECURITY_HEADERS } from './app/lib/security'
+import { withRateLimit, apiRateLimit, adminApiRateLimit, contactFormRateLimit, uploadRateLimit } from './lib/rate-limit'
+import { SECURITY_HEADERS } from './lib/security'
 
 // Define protected routes that require authentication
 const isProtectedRoute = createRouteMatcher([
@@ -11,16 +11,27 @@ const isProtectedRoute = createRouteMatcher([
   '/api/upload(.*)',
 ])
 
-// Define admin-only routes that require admin role
-const isAdminRoute = createRouteMatcher([
-  '/admin/dashboard(.*)',
-  '/api/projects(.*)',
-  '/api/experiences(.*)',
-  '/api/upload(.*)',
+// Define public Clerk routes that should not be protected
+const isPublicClerkRoute = createRouteMatcher([
+  '/admin/login(.*)',
+  '/admin/sign-up(.*)',
 ])
 
 export default clerkMiddleware(async (auth, request) => {
   const { userId } = await auth()
+  
+  // Skip protection for public Clerk routes
+  if (isPublicClerkRoute(request)) {
+    // Allow Clerk authentication pages to work normally
+    const response = NextResponse.next()
+    
+    // Add security headers
+    Object.entries(SECURITY_HEADERS).forEach(([key, value]) => {
+      response.headers.set(key, value)
+    })
+    
+    return response
+  }
   
   // Handle protected routes
   if (isProtectedRoute(request)) {

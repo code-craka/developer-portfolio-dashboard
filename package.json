@@ -8,7 +8,7 @@
     "start": "next start",
     "lint": "next lint",
     "init-db": "tsx scripts/init-db.ts",
-    "reset-db": "tsx -e \"import { DatabaseMigrations } from './app/lib/migrations'; DatabaseMigrations.resetDatabase();\"",
+    "reset-db": "tsx -e \"import { DatabaseMigrations } from './lib/migrations'; DatabaseMigrations.resetDatabase();\"",
     "test-auth": "tsx scripts/test-auth-setup.ts"
   },
   "dependencies": {

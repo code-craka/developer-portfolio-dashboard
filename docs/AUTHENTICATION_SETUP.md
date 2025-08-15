@@ -16,12 +16,12 @@ The authentication system provides secure access to the admin dashboard with the
 
 ### Components
 
-1. **Clerk Integration** (`app/lib/clerk.ts`)
+1. **Clerk Integration** (`lib/clerk.ts`)
    - Server-side authentication utilities
    - Role-based access control functions
    - Admin context management
 
-2. **Admin Service** (`app/lib/admin-service.ts`)
+2. **Admin Service** (`lib/admin-service.ts`)
    - Database operations for admin users
    - Role verification and management
    - Admin statistics and reporting
@@ -36,7 +36,7 @@ The authentication system provides secure access to the admin dashboard with the
    - Database user management
    - Event-driven admin creation/updates
 
-5. **Authentication Testing** (`app/lib/auth-test.ts`, `scripts/test-auth-setup.ts`)
+5. **Authentication Testing** (`lib/auth-test.ts`, `scripts/test-auth-setup.ts`)
    - Comprehensive test suite
    - Database connectivity verification
    - Service operation validation
@@ -125,7 +125,7 @@ Configure the Clerk webhook in your Clerk dashboard:
 
 ## API Reference
 
-### Clerk Utilities (`app/lib/clerk.ts`)
+### Clerk Utilities (`lib/clerk.ts`)
 
 #### `requireAuth()`
 Ensures user is authenticated, redirects to login if not.
@@ -155,7 +155,7 @@ Checks if current user has admin role.
 const isAdmin = await isCurrentUserAdmin()
 ```
 
-### Admin Service (`app/lib/admin-service.ts`)
+### Admin Service (`lib/admin-service.ts`)
 
 #### `getAdminByClerkId(clerkId: string)`
 Retrieves admin record by Clerk ID.
