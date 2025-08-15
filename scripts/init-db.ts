@@ -12,6 +12,13 @@
  *   npx tsx scripts/init-db.ts
  */
 
+import { config } from 'dotenv'
+
+// Load environment variables FIRST
+config({ path: '.env.local' })
+config({ path: '.env' })
+
+// Now import modules that depend on environment variables
 import { DatabaseMigrations } from '../app/lib/migrations';
 
 async function initializeDatabase() {
@@ -21,7 +28,7 @@ async function initializeDatabase() {
     // Check if tables already exist
     console.log('📋 Checking existing tables...');
     const existingTables = await DatabaseMigrations.checkTablesExist();
-    
+
     console.log('Table Status:');
     Object.entries(existingTables).forEach(([table, exists]) => {
       console.log(`  ${exists ? '✅' : '❌'} ${table}`);
@@ -34,7 +41,7 @@ async function initializeDatabase() {
     // Verify tables were created
     console.log('\n📋 Verifying table creation...');
     const finalTables = await DatabaseMigrations.checkTablesExist();
-    
+
     console.log('Final Table Status:');
     Object.entries(finalTables).forEach(([table, exists]) => {
       console.log(`  ${exists ? '✅' : '❌'} ${table}`);
