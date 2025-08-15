@@ -1,25 +1,31 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
-import { withRateLimit, apiRateLimit, authRateLimit } from './app/lib/rate-limit'
+import { withRateLimit, apiRateLimit, adminApiRateLimit, contactFormRateLimit, uploadRateLimit } from './app/lib/rate-limit'
+import { SECURITY_HEADERS } from './app/lib/security'
 
 export function middleware(request: NextRequest) {
   const response = NextResponse.next()
 
   // Add security headers
-  response.headers.set('X-Content-Type-Options', 'nosniff')
-  response.headers.set('X-Frame-Options', 'DENY')
-  response.headers.set('X-XSS-Protection', '1; mode=block')
-  response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin')
-  response.headers.set(
-    'Content-Security-Policy',
-    "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:;"
-  )
+  Object.entries(SECURITY_HEADERS).forEach(([key, value]) => {
+    response.headers.set(key, value)
+  })
 
   // Apply rate limiting to API routes
   if (request.nextUrl.pathname.startsWith('/api/')) {
-    const rateLimiter = request.nextUrl.pathname.includes('/auth/') 
-      ? authRateLimit 
-      : apiRateLimit
+    let rateLimiter = apiRateLimit
+    
+    // Choose appropriate rate limiter based on endpoint
+    if (request.nextUrl.pathname.startsWith('/api/contact')) {
+      rateLimiter = contactFormRateLimit
+    } else if (request.nextUrl.pathname.startsWith('/api/upload')) {
+      rateLimiter = uploadRateLimit
+    } else if (request.nextUrl.pathname.includes('/admin/') || 
+               request.nextUrl.pathname.startsWith('/api/projects') ||
+               request.nextUrl.pathname.startsWith('/api/experiences')) {
+      // Admin operations get higher rate limits
+      rateLimiter = adminApiRateLimit
+    }
     
     const rateLimitResult = withRateLimit(rateLimiter, request)
     
@@ -31,6 +37,7 @@ export function middleware(request: NextRequest) {
     if (!rateLimitResult.success) {
       return new NextResponse(
         JSON.stringify({
+          success: false,
           error: 'Too Many Requests',
           message: 'Rate limit exceeded. Please try again later.'
         }),
@@ -41,6 +48,7 @@ export function middleware(request: NextRequest) {
             'X-RateLimit-Limit': rateLimitResult.limit.toString(),
             'X-RateLimit-Remaining': '0',
             'X-RateLimit-Reset': rateLimitResult.reset.toString(),
+            ...SECURITY_HEADERS
           }
         }
       )
