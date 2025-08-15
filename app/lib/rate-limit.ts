@@ -50,8 +50,9 @@ class RateLimiter {
   // Clean up old entries periodically
   cleanup(): void {
     const now = Date.now()
-    for (const [identifier, requests] of this.requests.entries()) {
-      const validRequests = requests.filter(time => time > now - this.config.interval)
+    const entries = Array.from(this.requests.entries())
+    for (const [identifier, requests] of entries) {
+      const validRequests = requests.filter((time: number) => time > now - this.config.interval)
       if (validRequests.length === 0) {
         this.requests.delete(identifier)
       } else {
@@ -96,8 +97,8 @@ export function getClientIdentifier(request: NextRequest): string {
     return realIp
   }
   
-  // Fallback to connection IP
-  return request.ip || 'unknown'
+  // Fallback for unknown IP
+  return 'unknown'
 }
 
 // Middleware helper for rate limiting
