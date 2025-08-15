@@ -90,7 +90,7 @@ Or visit the health check endpoint in your browser after starting the dev server
 The database connection is managed through a singleton pattern:
 
 ```typescript
-import { db } from '@/app/lib/db';
+import { db } from '@/lib/db';
 
 // Execute a query
 const results = await db.query('SELECT * FROM projects');
@@ -104,7 +104,7 @@ const isConnected = await db.testConnection();
 Use the service classes for CRUD operations:
 
 ```typescript
-import { ProjectService, ExperienceService, ContactService } from '@/app/lib/database-utils';
+import { ProjectService, ExperienceService, ContactService } from '@/lib/database-utils';
 
 // Get all projects
 const projects = await ProjectService.getAllProjects();
@@ -129,7 +129,7 @@ const updatedProject = await ProjectService.updateProject(1, {
 Run migrations manually:
 
 ```typescript
-import { DatabaseMigrations } from '@/app/lib/migrations';
+import { DatabaseMigrations } from '@/lib/migrations';
 
 // Create all tables and indexes
 await DatabaseMigrations.runMigrations();
@@ -173,7 +173,7 @@ const tables = await DatabaseMigrations.checkTablesExist();
 The system can automatically repair common database issues:
 
 ```typescript
-import { DatabaseHealth } from '@/app/lib/db-health';
+import { DatabaseHealth } from '@/lib/db-health';
 
 const repair = await DatabaseHealth.autoRepair();
 console.log(repair.message);

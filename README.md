@@ -67,39 +67,77 @@ A modern, full-stack developer portfolio with an integrated admin dashboard buil
 
 6. Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-## Project Structure
+## Project Structure (Next.js 15+ App Router Best Practices)
 
 ```
-├── app/
-│   ├── (admin)/          # Admin route group
-│   ├── api/              # API routes
-│   │   └── health/       # Health check endpoints
-│   ├── components/       # React components
-│   │   ├── ui/           # Reusable UI components
-│   │   ├── sections/     # Page sections
-│   │   └── admin/        # Admin-specific components
-│   ├── lib/              # Utility functions and configurations
-│   │   ├── db.ts         # Database connection utility
-│   │   ├── database-utils.ts # CRUD service classes
-│   │   ├── migrations.ts # Database migration system
-│   │   ├── db-health.ts  # Database health monitoring
-│   │   ├── types.ts      # TypeScript interfaces
-│   │   ├── rate-limit.ts # Rate limiting utilities
-│   │   └── utils.ts      # General utility functions
-│   ├── globals.css       # Global styles
-│   ├── layout.tsx        # Root layout
-│   └── page.tsx          # Home page
-├── docs/
-│   └── DATABASE_SETUP.md # Database setup guide
-├── scripts/
-│   └── init-db.ts        # Database initialization script
-├── public/
-│   └── uploads/          # File uploads
-├── .kiro/
-│   └── specs/            # Feature specifications
-├── middleware.ts         # Route protection
-├── CHANGELOG.md          # Project changelog
+├── app/                          # Next.js App Router (routes & layouts only)
+│   ├── (admin)/                  # Admin route group
+│   │   ├── dashboard/page.tsx    # /dashboard route
+│   │   ├── login/page.tsx        # /login route
+│   │   ├── profile/page.tsx      # /profile route
+│   │   ├── sign-up/page.tsx      # /sign-up route
+│   │   └── layout.tsx            # Admin group layout
+│   ├── api/                      # API routes
+│   │   ├── health/db/route.ts    # Database health check
+│   │   └── webhooks/clerk/route.ts # Clerk webhook handler
+│   ├── globals.css               # Global styles
+│   ├── layout.tsx                # Root layout
+│   └── page.tsx                  # Home page
+├── components/                   # Reusable React components (root level)
+│   ├── admin/                    # Admin-specific components
+│   │   ├── AdminLayoutWrapper.tsx
+│   │   ├── AdminNavigation.tsx
+│   │   └── AdminProfile.tsx
+│   ├── sections/                 # Page sections
+│   └── ui/                       # Generic UI components
+├── lib/                          # Utility functions & services (root level)
+│   ├── admin-service.ts          # Admin operations
+│   ├── auth-test.ts              # Authentication testing
+│   ├── clerk.ts                  # Clerk utilities
+│   ├── database-utils.ts         # CRUD service classes
+│   ├── db-health.ts              # Database health monitoring
+│   ├── db.ts                     # Database connection
+│   ├── migrations.ts             # Database migration system
+│   ├── rate-limit.ts             # Rate limiting utilities
+│   ├── security.ts               # Security configurations
+│   ├── types.ts                  # TypeScript interfaces
+│   └── utils.ts                  # General utility functions
+├── public/                       # Static assets
+│   ├── uploads/projects/         # Project image uploads
+│   ├── clients.html              # Standalone HTML files
+│   └── style.css                 # Additional styles
+├── scripts/                      # Database & utility scripts
+│   ├── init-db.ts                # Database initialization
+│   ├── test-auth-setup.ts        # Authentication testing
+│   └── test-clerk-setup.ts       # Clerk setup verification
+├── docs/                         # Documentation
+│   ├── DATABASE_SETUP.md         # Database setup guide
+│   ├── AUTHENTICATION_SETUP.md   # Auth setup guide
+│   └── API_DOCUMENTATION.md      # API documentation
+├── .kiro/                        # Kiro configuration
+│   ├── specs/                    # Feature specifications
+│   └── steering/                 # Project guidance
+├── middleware.ts                 # Route protection
+├── CHANGELOG.md                  # Project changelog
 └── package.json
+```
+
+### Import Patterns
+
+The project uses TypeScript path aliases for clean imports:
+
+```typescript
+// Utility functions and services
+import { AdminService } from '@/lib/admin-service'
+import { db } from '@/lib/db'
+import { requireAdminAuth } from '@/lib/clerk'
+
+// React components
+import AdminNavigation from '@/components/admin/AdminNavigation'
+import ProjectCard from '@/components/ui/ProjectCard'
+
+// Type definitions
+import type { Project, Admin } from '@/lib/types'
 ```
 
 ## Available Scripts

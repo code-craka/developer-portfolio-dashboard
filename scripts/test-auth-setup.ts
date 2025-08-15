@@ -22,7 +22,7 @@ config({ path: '.env.local' })
 config({ path: '.env' })
 
 // Now import modules that depend on environment variables
-import { AuthTestSuite } from '../app/lib/auth-test'
+import { AuthTestSuite } from '../lib/auth-test'
 
 async function testAuthenticationSetup() {
   console.log('🔐 Testing Admin Authentication Setup...\n')

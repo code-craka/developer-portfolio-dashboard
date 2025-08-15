@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { DatabaseHealth } from '@/app/lib/db-health';
+import { DatabaseHealth } from '@/lib/db-health';
 
 // GET /api/health/db - Check database health
 export async function GET(request: NextRequest) {

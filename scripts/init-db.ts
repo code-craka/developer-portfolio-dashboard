@@ -19,7 +19,7 @@ config({ path: '.env.local' })
 config({ path: '.env' })
 
 // Now import modules that depend on environment variables
-import { DatabaseMigrations } from '../app/lib/migrations';
+import { DatabaseMigrations } from '../lib/migrations';
 
 async function initializeDatabase() {
   console.log('🚀 Initializing Developer Portfolio Database...\n');

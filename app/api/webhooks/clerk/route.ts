@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { Webhook } from 'svix'
 import { WebhookEvent } from '@clerk/nextjs/server'
-import { AdminService } from '@/app/lib/admin-service'
+import { AdminService } from '@/lib/admin-service'
 
 // Type guards for webhook data
 interface UserWebhookData {
