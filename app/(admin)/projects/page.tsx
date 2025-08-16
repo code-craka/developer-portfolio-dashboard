@@ -1,6 +1,15 @@
+import { Metadata } from 'next'
 import { requireAdminAuth } from '@/lib/clerk'
 import AdminLayoutWrapper from '@/components/admin/AdminLayoutWrapper'
 import ProjectsManager from '@/components/admin/ProjectsManager'
+import { generateMetadata as generateSEOMetadata } from '@/lib/seo'
+
+export const metadata: Metadata = generateSEOMetadata({
+  title: 'Manage Projects',
+  description: 'Admin interface for managing portfolio projects.',
+  url: '/projects',
+  noIndex: true,
+})
 
 export default async function ProjectsPage() {
   // Require admin authentication

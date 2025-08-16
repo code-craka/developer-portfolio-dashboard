@@ -1,6 +1,15 @@
+import { Metadata } from 'next'
 import { requireAdminAuth, getCurrentAdmin } from '@/lib/clerk'
 import AdminLayoutWrapper from '@/components/admin/AdminLayoutWrapper'
 import Link from 'next/link'
+import { generateMetadata as generateSEOMetadata } from '@/lib/seo'
+
+export const metadata: Metadata = generateSEOMetadata({
+  title: 'Admin Dashboard',
+  description: 'Portfolio admin dashboard for managing projects, experience, and contact messages.',
+  url: '/dashboard',
+  noIndex: true, // Don't index admin pages
+})
 
 export default async function AdminDashboard() {
   // Require admin authentication and role verification
