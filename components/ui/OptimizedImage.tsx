@@ -46,7 +46,7 @@ const OptimizedImage = forwardRef<HTMLDivElement, OptimizedImageProps>(({
   const [currentSrc, setCurrentSrc] = useState(src)
 
   // Get optimized props based on preset or custom dimensions
-  const imageProps = preset 
+  const baseImageProps = preset 
     ? createOptimizedImageProps(currentSrc, alt, preset)
     : {
         src: currentSrc,
@@ -59,6 +59,16 @@ const OptimizedImage = forwardRef<HTMLDivElement, OptimizedImageProps>(({
         sizes: sizes || '(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw',
         priority,
       }
+
+  // Remove width and height when using fill prop
+  const imageProps = fill 
+    ? {
+        ...baseImageProps,
+        width: undefined,
+        height: undefined,
+        sizes: sizes || baseImageProps.sizes || '(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw',
+      }
+    : baseImageProps
 
   const handleLoad = () => {
     setIsLoading(false)
@@ -109,9 +119,16 @@ const OptimizedImage = forwardRef<HTMLDivElement, OptimizedImageProps>(({
 
       {/* Optimized image */}
       <Image
-        {...imageProps}
+        src={imageProps.src}
         alt={alt}
+        width={fill ? undefined : imageProps.width}
+        height={fill ? undefined : imageProps.height}
         fill={fill}
+        quality={imageProps.quality}
+        placeholder={imageProps.placeholder}
+        blurDataURL={imageProps.blurDataURL}
+        sizes={imageProps.sizes}
+        priority={imageProps.priority}
         className={`transition-opacity duration-300 ${isLoading ? 'opacity-0' : 'opacity-100'} ${fill ? 'object-cover' : ''}`}
         onLoad={handleLoad}
         onError={handleError}
