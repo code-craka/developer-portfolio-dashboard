@@ -1,15 +1,7 @@
+import React from 'react'
 import { SignIn } from '@clerk/nextjs'
-import { Suspense } from 'react'
 
-function ErrorMessage({ searchParams }: { searchParams: Promise<{ error?: string }> }) {
-  return (
-    <Suspense fallback={null}>
-      <ErrorMessageContent searchParams={searchParams} />
-    </Suspense>
-  )
-}
-
-async function ErrorMessageContent({ searchParams }: { searchParams: Promise<{ error?: string }> }) {
+async function ErrorMessage({ searchParams }: { searchParams: Promise<{ error?: string }> }) {
   const params = await searchParams
 
   if (!params.error) return null
@@ -34,6 +26,8 @@ async function ErrorMessageContent({ searchParams }: { searchParams: Promise<{ e
     </div>
   )
 }
+
+
 
 interface AdminLoginPageProps {
   searchParams: Promise<{
