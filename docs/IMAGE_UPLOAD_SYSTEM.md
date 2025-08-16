@@ -355,6 +355,73 @@ curl -X DELETE /api/admin/files
 npx tsx scripts/test-upload.ts
 ```
 
+## OptimizedImage Component
+
+The `OptimizedImage` component provides advanced image optimization and loading features for displaying uploaded images:
+
+### Features
+- **Automatic Optimization**: Uses Next.js Image component with optimized settings
+- **Preset Configurations**: Pre-defined settings for different use cases
+- **Fill Mode Support**: Properly handles Next.js Image fill prop by removing conflicting width/height
+- **Loading States**: Skeleton loading and smooth transitions
+- **Error Handling**: Fallback images and graceful error states
+- **Responsive Images**: Automatic sizing based on viewport
+- **Blur Placeholder**: Generated blur data URLs for smooth loading
+
+### Usage Examples
+
+```tsx
+// Basic usage with preset
+<OptimizedImage
+  src="/uploads/projects/my-project.jpg"
+  alt="My Project"
+  preset="project_showcase"
+/>
+
+// Custom dimensions
+<OptimizedImage
+  src="/uploads/companies/company-logo.png"
+  alt="Company Logo"
+  width={200}
+  height={100}
+  quality={90}
+/>
+
+// Fill mode for containers (automatically removes width/height)
+<OptimizedImage
+  src="/uploads/projects/project.jpg"
+  alt="Project Image"
+  fill
+  sizes="(max-width: 768px) 100vw, 50vw"
+  className="object-cover"
+/>
+
+// With fallback
+<OptimizedImage
+  src="/uploads/projects/project.jpg"
+  alt="Project Image"
+  preset="project_card"
+  fallbackSrc="/uploads/projects/placeholder.svg"
+/>
+```
+
+### Fill Mode Handling
+
+The component intelligently handles the `fill` prop by:
+- Automatically removing `width` and `height` properties when `fill={true}`
+- Providing sensible default `sizes` attribute for responsive images
+- Adding proper object-fit classes for image scaling within containers
+
+### Available Presets
+
+```typescript
+// Common presets for uploaded images
+'project_showcase'    // Large project images (800x600)
+'project_card'        // Project card thumbnails (400x300)
+'company_logo'        // Company logos (200x100)
+'profile'            // Profile photos (300x300)
+```
+
 ## Integration with Project Management
 
 The upload system integrates seamlessly with:
