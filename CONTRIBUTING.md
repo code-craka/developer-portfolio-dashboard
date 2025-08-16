@@ -8,255 +8,414 @@ Thank you for your interest in contributing to the Developer Portfolio Dashboard
 - [Getting Started](#getting-started)
 - [Development Setup](#development-setup)
 - [Project Structure](#project-structure)
-- [Coding Standards](#coding-standards)
-- [Commit Guidelines](#commit-guidelines)
+- [Contributing Guidelines](#contributing-guidelines)
 - [Pull Request Process](#pull-request-process)
 - [Testing](#testing)
 - [Documentation](#documentation)
+- [Community](#community)
 
 ## Code of Conduct
 
-This project adheres to a code of conduct. By participating, you are expected to uphold this code. Please report unacceptable behavior to the project maintainers.
+This project follows a Code of Conduct to ensure a welcoming environment for all contributors. By participating, you agree to:
+
+- Be respectful and inclusive
+- Welcome newcomers and help them learn
+- Focus on constructive feedback
+- Respect different viewpoints and experiences
+- Show empathy towards other community members
 
 ## Getting Started
 
-1. Fork the repository on GitHub
-2. Clone your fork locally
-3. Create a new branch for your feature or bug fix
-4. Make your changes
-5. Test your changes
-6. Submit a pull request
-
-## Development Setup
-
 ### Prerequisites
 
-- Node.js 18+ 
-- npm or yarn
-- MongoDB (local or Atlas)
-- Git
+- Node.js 18+ installed
+- Git installed
+- Basic knowledge of TypeScript, React, and Next.js
+- Familiarity with TailwindCSS (helpful but not required)
 
-### Installation
+### Development Setup
 
-1. Clone the repository:
+1. **Fork the Repository**
    ```bash
-   git clone https://github.com/code-craka/developer-portfolio-dashboard.git
+   # Fork on GitHub, then clone your fork
+   git clone https://github.com/yourusername/developer-portfolio-dashboard.git
    cd developer-portfolio-dashboard
    ```
 
-2. Install dependencies:
+2. **Install Dependencies**
    ```bash
    npm install
    ```
 
-3. Set up environment variables:
+3. **Set Up Environment**
    ```bash
    cp .env.example .env.local
+   # Edit .env.local with your configuration
    ```
-   Update the values in `.env.local` with your configuration.
 
-4. Start the development server:
+4. **Initialize Database**
+   ```bash
+   npm run init-db
+   ```
+
+5. **Start Development Server**
    ```bash
    npm run dev
    ```
 
+6. **Verify Setup**
+   - Visit http://localhost:3000
+   - Check database health at http://localhost:3000/api/health/db
+   - Test admin login at http://localhost:3000/login
+
 ## Project Structure
 
 ```
-├── app/                    # Next.js app directory
-│   ├── (admin)/           # Admin route group
-│   ├── api/               # API routes
-│   ├── components/        # React components
-│   │   ├── ui/           # Reusable UI components
-│   │   ├── sections/     # Page sections
-│   │   └── admin/        # Admin-specific components
-│   ├── lib/              # Utility functions and configurations
-│   ├── globals.css       # Global styles
-│   ├── layout.tsx        # Root layout
-│   └── page.tsx          # Home page
-├── public/               # Static assets
-├── .github/              # GitHub workflows and templates
-├── middleware.ts         # Route protection middleware
-└── package.json
+├── app/                    # Next.js App Router
+│   ├── (admin)/           # Admin routes (protected)
+│   ├── api/               # API endpoints
+│   └── globals.css        # Global styles
+├── components/            # React components
+│   ├── admin/            # Admin dashboard components
+│   ├── sections/         # Page sections
+│   └── ui/               # Reusable UI components
+├── lib/                  # Utilities and services
+├── docs/                 # Documentation
+├── scripts/              # Database and utility scripts
+└── test/                 # Test files
 ```
 
-## Coding Standards
+### Key Technologies
 
-### TypeScript
+- **Framework**: Next.js 15.4.6 with App Router
+- **Language**: TypeScript 5.0.0 (strict mode)
+- **Styling**: TailwindCSS 3.4.3 with custom theme
+- **Database**: NeonDB (PostgreSQL) with raw SQL
+- **Authentication**: Clerk 6.31.1
+- **Animations**: Framer Motion 10.18.0
+- **UI Components**: Headless UI 2.2.7
 
-- Use TypeScript for all new code
-- Define proper interfaces and types
-- Avoid `any` type when possible
-- Use strict mode settings
+## Contributing Guidelines
 
-### React/Next.js
+### Types of Contributions
 
-- Use functional components with hooks
-- Follow React best practices
-- Use Next.js App Router conventions
-- Implement proper error boundaries
+We welcome various types of contributions:
 
-### Styling
+1. **Bug Fixes**: Fix issues or improve existing functionality
+2. **Features**: Add new features or enhance existing ones
+3. **Documentation**: Improve docs, add examples, or fix typos
+4. **Testing**: Add tests or improve test coverage
+5. **Performance**: Optimize performance or bundle size
+6. **Accessibility**: Improve accessibility compliance
+7. **Design**: Enhance UI/UX or visual design
 
-- Use TailwindCSS for styling
-- Follow the established design system
-- Use CSS modules for component-specific styles
-- Maintain responsive design principles
+### Before You Start
 
-### Code Formatting
+1. **Check Existing Issues**: Look for existing issues or discussions
+2. **Create an Issue**: For new features or significant changes, create an issue first
+3. **Discuss**: Engage with maintainers and community before starting work
+4. **Small Changes**: For small fixes, you can directly create a PR
 
-- Use Prettier for code formatting
-- Follow ESLint rules
-- Use meaningful variable and function names
-- Add comments for complex logic
+### Development Guidelines
 
-## Commit Guidelines
+#### Code Style
 
-We follow the [Conventional Commits](https://www.conventionalcommits.org/) specification:
+- **TypeScript**: Use strict TypeScript with proper type definitions
+- **Components**: Use functional components with hooks
+- **Styling**: Use TailwindCSS utility classes, avoid custom CSS when possible
+- **Imports**: Use TypeScript path aliases (`@/lib/*`, `@/components/*`)
+- **Naming**: Use PascalCase for components, camelCase for functions/variables
 
-### Commit Message Format
+#### Component Guidelines
 
+```typescript
+// Good component structure
+'use client' // Only if needed for client-side features
+
+import { useState } from 'react'
+import { motion } from 'framer-motion'
+import { SomeIcon } from '@heroicons/react/24/outline'
+import { SomeType } from '@/lib/types'
+
+interface ComponentProps {
+  title: string
+  optional?: boolean
+}
+
+export default function Component({ title, optional = false }: ComponentProps) {
+  const [state, setState] = useState<SomeType>()
+
+  return (
+    <motion.div className="glassmorphism-card p-6">
+      <h2 className="text-xl font-semibold text-white mb-4">{title}</h2>
+      {/* Component content */}
+    </motion.div>
+  )
+}
 ```
-<type>[optional scope]: <description>
 
-[optional body]
+#### API Guidelines
 
-[optional footer(s)]
+```typescript
+// API route structure
+import { NextRequest, NextResponse } from 'next/server'
+import { requireAdminAuth } from '@/lib/clerk'
+import { SECURITY_HEADERS } from '@/lib/security'
+import { db } from '@/lib/db'
+import { ApiResponse } from '@/lib/types'
+
+export async function GET(request: NextRequest) {
+  try {
+    // Add security headers
+    const headers = new Headers(SECURITY_HEADERS)
+    headers.set('Content-Type', 'application/json')
+
+    // Your logic here
+
+    return NextResponse.json<ApiResponse>({
+      success: true,
+      data: result
+    }, { headers })
+
+  } catch (error) {
+    console.error('API Error:', error)
+    return NextResponse.json<ApiResponse>({
+      success: false,
+      error: 'Internal server error'
+    }, { status: 500 })
+  }
+}
 ```
 
-### Types
+#### Database Guidelines
 
-- `feat`: A new feature
-- `fix`: A bug fix
-- `docs`: Documentation only changes
-- `style`: Changes that do not affect the meaning of the code
-- `refactor`: A code change that neither fixes a bug nor adds a feature
-- `perf`: A code change that improves performance
-- `test`: Adding missing tests or correcting existing tests
-- `chore`: Changes to the build process or auxiliary tools
+- Use parameterized queries to prevent SQL injection
+- Follow existing patterns in `lib/database-utils.ts`
+- Add proper indexes for new queries
+- Update migration scripts for schema changes
 
-### Examples
+#### Styling Guidelines
 
-```
-feat(auth): add JWT authentication system
-fix(ui): resolve mobile navigation menu issue
-docs: update API documentation
-style: format code with prettier
-refactor(db): optimize database queries
-```
+- Use existing TailwindCSS utility classes
+- Follow the electric blue theme (`#00D4FF`)
+- Use glassmorphism effects for cards and modals
+- Ensure responsive design (mobile-first approach)
+- Test dark theme compatibility
 
 ## Pull Request Process
 
-1. **Create a feature branch** from `main`:
+### 1. Create a Branch
+
+```bash
+# Create a feature branch
+git checkout -b feature/amazing-feature
+
+# Or a bug fix branch
+git checkout -b fix/bug-description
+```
+
+### 2. Make Changes
+
+- Follow the development guidelines above
+- Write clear, descriptive commit messages
+- Keep commits focused and atomic
+- Test your changes thoroughly
+
+### 3. Test Your Changes
+
+```bash
+# Run linting
+npm run lint
+
+# Run tests (if available)
+npm test
+
+# Test database operations
+npm run test-projects
+npm run test-experiences
+npm run test-contact
+
+# Test the application manually
+npm run dev
+```
+
+### 4. Update Documentation
+
+- Update relevant documentation in `/docs`
+- Add JSDoc comments for new functions
+- Update README.md if needed
+- Add or update type definitions
+
+### 5. Submit Pull Request
+
+1. **Push to Your Fork**
    ```bash
-   git checkout -b feature/your-feature-name
+   git push origin feature/amazing-feature
    ```
 
-2. **Make your changes** following the coding standards
+2. **Create Pull Request**
+   - Use a clear, descriptive title
+   - Provide detailed description of changes
+   - Reference related issues
+   - Add screenshots for UI changes
+   - Mark as draft if work in progress
 
-3. **Test your changes** thoroughly:
-   ```bash
-   npm run build
-   npm run lint
+3. **PR Template**
+   ```markdown
+   ## Description
+   Brief description of changes
+
+   ## Type of Change
+   - [ ] Bug fix
+   - [ ] New feature
+   - [ ] Documentation update
+   - [ ] Performance improvement
+   - [ ] Other (please describe)
+
+   ## Testing
+   - [ ] Tested locally
+   - [ ] Added/updated tests
+   - [ ] Tested on different screen sizes
+   - [ ] Tested with different data
+
+   ## Screenshots (if applicable)
+   Add screenshots here
+
+   ## Checklist
+   - [ ] Code follows project style guidelines
+   - [ ] Self-review completed
+   - [ ] Documentation updated
+   - [ ] No breaking changes (or documented)
    ```
 
-4. **Commit your changes** using conventional commit format
+### 6. Review Process
 
-5. **Push to your fork**:
-   ```bash
-   git push origin feature/your-feature-name
-   ```
-
-6. **Create a Pull Request** with:
-   - Clear title and description
-   - Reference to related issues
-   - Screenshots (if applicable)
-   - Test results
-
-7. **Address review feedback** promptly
-
-8. **Ensure CI passes** before requesting final review
+- Maintainers will review your PR
+- Address feedback and make requested changes
+- Keep discussions respectful and constructive
+- Be patient - reviews take time
 
 ## Testing
 
 ### Running Tests
 
 ```bash
-# Run all tests
+# Database tests
+npm run test-projects
+npm run test-experiences
+npm run test-contact
+
+# HTTP API tests (requires dev server running)
+npm run test-projects-http
+npm run test-experiences-http
+npm run test-contact-http
+
+# Component tests (if available)
 npm test
-
-# Run tests in watch mode
-npm run test:watch
-
-# Run tests with coverage
-npm run test:coverage
 ```
 
 ### Writing Tests
 
-- Write unit tests for utility functions
-- Write integration tests for API routes
-- Write component tests for React components
-- Maintain good test coverage (aim for >80%)
+- Add tests for new features
+- Follow existing test patterns
+- Test both success and error cases
+- Include edge cases and validation
 
-### Test Structure
+### Manual Testing Checklist
 
-```javascript
-describe('Component/Function Name', () => {
-  it('should do something specific', () => {
-    // Test implementation
-  });
-});
-```
+- [ ] Application builds successfully
+- [ ] Database operations work correctly
+- [ ] Authentication flow works
+- [ ] Admin dashboard functions properly
+- [ ] Public portfolio displays correctly
+- [ ] Responsive design works on mobile
+- [ ] Images upload and display correctly
+- [ ] Contact form submissions work
+- [ ] Error handling works as expected
 
 ## Documentation
 
-### Code Documentation
+### Types of Documentation
 
-- Add JSDoc comments for functions and classes
-- Document complex algorithms and business logic
-- Keep README.md up to date
-- Update API documentation when adding new endpoints
+1. **Code Documentation**: JSDoc comments for functions and components
+2. **API Documentation**: Update `/docs/API_DOCUMENTATION.md`
+3. **User Documentation**: Update guides in `/docs`
+4. **README Updates**: Keep README.md current
+5. **Changelog**: Update `CHANGELOG.md` for significant changes
 
-### API Documentation
+### Documentation Standards
 
-- Document all API endpoints
-- Include request/response examples
-- Specify authentication requirements
-- Document error responses
+- Use clear, concise language
+- Include code examples
+- Add screenshots for UI features
+- Keep documentation up to date with code changes
+- Use proper markdown formatting
 
-## Issue Reporting
+## Community
 
-When reporting issues:
+### Getting Help
 
-1. Use the provided issue templates
-2. Include steps to reproduce
-3. Provide environment information
-4. Add screenshots if applicable
-5. Check for existing similar issues
+- **GitHub Issues**: For bugs and feature requests
+- **GitHub Discussions**: For questions and general discussion
+- **Documentation**: Check `/docs` folder for guides
+- **Code Examples**: Look at existing code for patterns
 
-## Feature Requests
+### Communication Guidelines
 
-When requesting features:
+- Be respectful and professional
+- Provide context and details when asking questions
+- Search existing issues before creating new ones
+- Use clear, descriptive titles for issues and PRs
+- Tag maintainers only when necessary
 
-1. Use the feature request template
-2. Explain the use case
-3. Provide mockups or examples if possible
-4. Consider implementation complexity
+### Recognition
 
-## Questions and Support
-
-- Check existing documentation first
-- Search closed issues for similar questions
-- Create a new issue with the question label
-- Join our community discussions
-
-## Recognition
-
-Contributors will be recognized in:
-
-- README.md contributors section
+Contributors are recognized in:
+- GitHub contributors list
 - Release notes for significant contributions
-- GitHub contributors page
+- Special mentions for outstanding contributions
+
+## Development Tips
+
+### Useful Commands
+
+```bash
+# Development
+npm run dev              # Start dev server
+npm run build           # Build for production
+npm run lint            # Run ESLint
+
+# Database
+npm run init-db         # Initialize database
+npm run reset-db        # Reset database (dev only)
+
+# Testing
+npm run test-auth       # Test authentication
+npm run verify-experiences  # Verify API implementation
+```
+
+### Debugging
+
+- Use browser dev tools for frontend debugging
+- Check console logs for errors
+- Use database health endpoint: `/api/health/db`
+- Enable debug mode: `DEBUG=* npm run dev`
+
+### Performance Considerations
+
+- Optimize images and assets
+- Use proper loading states
+- Implement error boundaries
+- Follow React best practices
+- Monitor bundle size
+
+## Questions?
+
+If you have questions about contributing, please:
+
+1. Check existing documentation
+2. Search GitHub issues and discussions
+3. Create a new discussion or issue
+4. Tag maintainers if needed
 
 Thank you for contributing to the Developer Portfolio Dashboard! 🚀

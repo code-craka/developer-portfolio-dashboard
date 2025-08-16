@@ -1,6 +1,13 @@
 # Developer Portfolio Dashboard
 
-A modern, full-stack developer portfolio with an integrated admin dashboard built with Next.js 15.4.6, TypeScript, TailwindCSS, and NeonDB PostgreSQL.
+A modern, full-stack developer portfolio website with an integrated admin dashboard for content management. Built with Next.js 15.4.6, TypeScript, TailwindCSS, and NeonDB PostgreSQL.
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Next.js](https://img.shields.io/badge/Next.js-15.4.6-black)](https://nextjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.0.0-blue)](https://www.typescriptlang.org/)
+[![TailwindCSS](https://img.shields.io/badge/TailwindCSS-3.4.3-38B2AC)](https://tailwindcss.com/)
+
+> **Note**: This is an open-source project available under the MIT License. Feel free to use it as a template for your own developer portfolio!
 
 ## Features
 
@@ -14,10 +21,11 @@ A modern, full-stack developer portfolio with an integrated admin dashboard buil
 - 🔒 Route protection with middleware
 - 📡 Webhook integration for user management
 - 🖼️ Image upload system with validation and cleanup
+- 🎨 OptimizedImage component with Next.js Image integration and fill mode support
 - 📊 Project CRUD API with full admin management
 - 💼 Experience CRUD API with chronological sorting
 - 📧 Contact form API with message management
-- 🧪 Comprehensive testing suite for all implemented features
+- 🧪 Comprehensive testing suite with enhanced validation testing for all implemented features
 
 ### ✅ Recently Implemented
 - 🎭 Enhanced Hero Section with typewriter animations and particle effects
@@ -34,6 +42,7 @@ A modern, full-stack developer portfolio with an integrated admin dashboard buil
 - 🏷️ Tech stack color coding and categorization system
 - 🔗 GitHub and demo link validation with interactive buttons
 - ⭐ Featured projects highlighting system
+- 🖼️ Enhanced OptimizedImage component with improved fill mode handling
 
 ### 🚧 In Development
 - 💼 Experience timeline implementation
@@ -49,7 +58,7 @@ A modern, full-stack developer portfolio with an integrated admin dashboard buil
 - **Database**: NeonDB (PostgreSQL) with connection pooling
 - **Authentication**: Clerk Authentication v6.31.1
 - **ORM**: Custom TypeScript services with raw SQL
-- **Image Optimization**: Next.js Image component
+- **Image Optimization**: Next.js Image component with enhanced fill mode support
 - **Rate Limiting**: Custom rate limiting implementation
 - **UI Components**: Headless UI 2.2.7 for accessible components
 
@@ -122,7 +131,12 @@ This project is actively under development. Here's what's currently functional:
 
 ### Installation
 
-1. Clone the repository
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/yourusername/developer-portfolio-dashboard.git
+   cd developer-portfolio-dashboard
+   ```
+
 2. Install dependencies:
    ```bash
    npm install
@@ -256,7 +270,7 @@ import type { Project, Admin } from '@/lib/types'
 - `npm run test-auth` - Test authentication setup and admin functionality
 - `npm run test-projects` - Test project CRUD database operations
 - `npm run test-projects-http` - Test project HTTP API endpoints (requires dev server)
-- `npm run test-projects-complete` - Run comprehensive project API tests
+- `npm run test-projects-complete` - Run comprehensive project API tests with enhanced validation
 - `npm run test-experiences` - Test experience CRUD database operations
 - `npm run test-experiences-http` - Test experience HTTP API endpoints (requires dev server)
 - `npm run verify-experiences` - Verify experience API implementation and setup
@@ -335,6 +349,40 @@ The application provides a REST API for managing portfolio content:
 
 For detailed API documentation, see [API Documentation](./docs/API_DOCUMENTATION.md).
 
+## Contributing
+
+This is an open-source project! Contributions are welcome. Please feel free to:
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+### Development Setup
+
+1. Clone your fork:
+   ```bash
+   git clone https://github.com/yourusername/developer-portfolio-dashboard.git
+   cd developer-portfolio-dashboard
+   ```
+
+2. Follow the installation instructions above
+
+3. Make your changes and test thoroughly
+
+4. Submit a pull request with a clear description of your changes
+
+## Repository Information
+
+- **Repository**: [developer-portfolio-dashboard](https://github.com/yourusername/developer-portfolio-dashboard)
+- **Issues**: [Report bugs or request features](https://github.com/yourusername/developer-portfolio-dashboard/issues)
+- **License**: MIT License - see [LICENSE](./LICENSE) file for details
+
+## Keywords
+
+`portfolio`, `dashboard`, `nextjs`, `typescript`, `tailwindcss`, `clerk`, `neondb`, `developer-portfolio`, `admin-dashboard`, `full-stack`
+
 ## Author
 
 **Sayem Abdullah Rihan**
@@ -344,4 +392,15 @@ For detailed API documentation, see [API Documentation](./docs/API_DOCUMENTATION
 
 ## License
 
-MIT
+This project is licensed under the MIT License - see the [LICENSE](./LICENSE) file for details.
+
+### MIT License Summary
+
+- ✅ Commercial use
+- ✅ Modification
+- ✅ Distribution
+- ✅ Private use
+- ❌ Liability
+- ❌ Warranty
+
+You are free to use this project as a template for your own portfolio or as a starting point for client projects.
