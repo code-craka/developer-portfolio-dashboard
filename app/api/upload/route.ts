@@ -4,6 +4,7 @@ import { existsSync } from 'fs'
 import path from 'path'
 import { requireAdminAuth } from '@/lib/clerk'
 import { validateFileUpload, generateSecureFileName, SECURITY_HEADERS } from '@/lib/security'
+import { optimizeUploadedImage, getImageMetadata } from '@/lib/image-utils'
 import { ApiResponse } from '@/lib/types'
 
 // POST /api/upload - Handle file uploads for projects and company logos
@@ -61,6 +62,19 @@ export async function POST(request: NextRequest) {
 
     await writeFile(filePath, buffer)
 
+    // Optimize the uploaded image
+    const optimizationResult = await optimizeUploadedImage(filePath, {
+      maxWidth: isLogo ? 400 : 1200,
+      maxHeight: isLogo ? 400 : 800,
+      quality: 85,
+      generateResponsive: !isLogo // Generate responsive images for projects only
+    })
+
+    // Get image metadata
+    const metadata = await getImageMetadata(isLogo 
+      ? `/uploads/companies/${secureFileName}`
+      : `/uploads/projects/${secureFileName}`)
+
     // Return the relative URL for the uploaded file
     const imageUrl = isLogo 
       ? `/uploads/companies/${secureFileName}`
@@ -73,9 +87,12 @@ export async function POST(request: NextRequest) {
         fileName: secureFileName,
         originalName: file.name,
         size: file.size,
-        type: file.type
+        type: file.type,
+        optimized: optimizationResult.optimized,
+        metadata,
+        responsiveImages: optimizationResult.responsiveImages
       },
-      message: 'File uploaded successfully'
+      message: 'File uploaded and optimized successfully'
     }, {
       status: 200,
       headers: SECURITY_HEADERS
