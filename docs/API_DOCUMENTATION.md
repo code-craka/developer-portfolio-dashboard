@@ -230,13 +230,13 @@ Delete a project and its associated image file. **Requires admin authentication.
 - `404`: Project not found
 - `500`: Server error
 
-**Note:** This endpoint automatically cleans up associated image files from the filesystem.
+**Note:** This endpoint automatically cleans up associated image files from the filesystem. The implementation includes proper error handling for file cleanup operations, logging warnings if file deletion fails but not failing the database deletion.
 
 ## Experience Endpoints
 
 ### GET /api/experiences
 
-Get all work experiences, ordered by start date (most recent first).
+Get all work experiences, ordered chronologically with current positions first. **Public endpoint - no authentication required.**
 
 **Response:**
 ```json
@@ -247,61 +247,107 @@ Get all work experiences, ordered by start date (most recent first).
       "id": 1,
       "company": "Tech Company",
       "position": "Senior Developer",
-      "startDate": "2023-01-15",
+      "startDate": "2023-01-15T00:00:00.000Z",
       "endDate": null,
-      "description": "Job description",
+      "description": "Job description with detailed responsibilities",
       "achievements": ["Achievement 1", "Achievement 2"],
-      "technologies": ["React", "Node.js"],
-      "companyLogo": "/uploads/logos/company.png",
+      "technologies": ["React", "Node.js", "TypeScript"],
+      "companyLogo": "/uploads/companies/company.png",
       "location": "San Francisco, CA",
       "employmentType": "Full-time",
       "createdAt": "2025-01-15T10:30:00.000Z",
       "updatedAt": "2025-01-15T10:30:00.000Z"
     }
-  ]
+  ],
+  "message": "Retrieved 1 experiences"
 }
 ```
 
-### POST /api/admin/experiences
+**Sorting Logic:**
+- Current positions (endDate is null) appear first
+- Then sorted by end date (most recent first)
+- Finally sorted by start date (most recent first)
 
-Create a new experience entry. **Requires authentication.**
+**Status Codes:**
+- `200`: Success
+- `500`: Server error
+
+### POST /api/experiences
+
+Create a new experience entry. **Requires admin authentication.**
 
 **Request Body:**
 ```json
 {
   "company": "New Company",
-  "position": "Developer",
+  "position": "Software Developer",
   "startDate": "2024-01-15",
   "endDate": "2024-12-15",
-  "description": "Job description",
-  "achievements": ["Achievement 1"],
-  "technologies": ["JavaScript", "Python"],
-  "companyLogo": "/uploads/logos/company.png",
+  "description": "Detailed job description with at least 10 characters",
+  "achievements": ["Achievement 1", "Achievement 2"],
+  "technologies": ["JavaScript", "Python", "React"],
+  "companyLogo": "/uploads/companies/company.png",
   "location": "Remote",
   "employmentType": "Contract"
 }
 ```
 
-### PUT /api/admin/experiences/[id]
+**Validation Rules:**
+- `company`: Required, minimum 2 characters
+- `position`: Required, minimum 2 characters
+- `startDate`: Required, valid date
+- `endDate`: Optional, must be after startDate if provided
+- `description`: Required, minimum 10 characters
+- `achievements`: Optional array of strings
+- `technologies`: Optional array of strings
+- `companyLogo`: Optional, valid image URL
+- `location`: Required, minimum 2 characters
+- `employmentType`: Required, must be one of: 'Full-time', 'Part-time', 'Contract', 'Freelance', 'Internship'
 
-Update an experience entry. **Requires authentication.**
-
-### DELETE /api/admin/experiences/[id]
-
-Delete an experience entry. **Requires authentication.**
-
-## Contact Endpoints
-
-### POST /api/contact
-
-Submit a contact form message.
-
-**Request Body:**
+**Response:**
 ```json
 {
-  "name": "John Doe",
-  "email": "john@example.com",
-  "message": "Hello, I'd like to discuss a project."
+  "success": true,
+  "data": {
+    "id": 2,
+    "company": "New Company",
+    "position": "Software Developer",
+    "startDate": "2024-01-15T00:00:00.000Z",
+    "endDate": "2024-12-15T00:00:00.000Z",
+    "description": "Detailed job description with at least 10 characters",
+    "achievements": ["Achievement 1", "Achievement 2"],
+    "technologies": ["JavaScript", "Python", "React"],
+    "companyLogo": "/uploads/companies/company.png",
+    "location": "Remote",
+    "employmentType": "Contract",
+    "createdAt": "2025-01-16T10:30:00.000Z",
+    "updatedAt": "2025-01-16T10:30:00.000Z"
+  },
+  "message": "Experience created successfully"
+}
+```
+
+**Status Codes:**
+- `201`: Experience created successfully
+- `400`: Validation error or missing required fields
+- `401`: Authentication required
+- `500`: Server error
+
+### PUT /api/experiences/[id]
+
+Update an existing experience entry. **Requires admin authentication.**
+
+**Parameters:**
+- `id`: Experience ID (number)
+
+**Request Body:** (partial update supported - only include fields to update)
+```json
+{
+  "company": "Updated Company Name",
+  "position": "Senior Software Developer",
+  "endDate": "2025-01-15",
+  "achievements": ["New Achievement", "Updated Achievement"],
+  "technologies": ["React", "TypeScript", "Node.js", "PostgreSQL"]
 }
 ```
 
@@ -309,15 +355,102 @@ Submit a contact form message.
 ```json
 {
   "success": true,
-  "message": "Message sent successfully"
+  "data": {
+    "id": 1,
+    "company": "Updated Company Name",
+    "position": "Senior Software Developer",
+    "startDate": "2023-01-15T00:00:00.000Z",
+    "endDate": "2025-01-15T00:00:00.000Z",
+    "description": "Original job description",
+    "achievements": ["New Achievement", "Updated Achievement"],
+    "technologies": ["React", "TypeScript", "Node.js", "PostgreSQL"],
+    "companyLogo": "/uploads/companies/company.png",
+    "location": "San Francisco, CA",
+    "employmentType": "Full-time",
+    "createdAt": "2025-01-15T10:30:00.000Z",
+    "updatedAt": "2025-01-16T14:20:00.000Z"
+  },
+  "message": "Experience updated successfully"
 }
 ```
 
+**Status Codes:**
+- `200`: Experience updated successfully
+- `400`: Invalid experience ID or validation error
+- `401`: Authentication required
+- `404`: Experience not found
+- `500`: Server error
+
+### DELETE /api/experiences/[id]
+
+Delete an experience entry and its associated company logo file. **Requires admin authentication.**
+
+**Parameters:**
+- `id`: Experience ID (number)
+
+**Response:**
+```json
+{
+  "success": true,
+  "message": "Experience \"Senior Developer at Tech Company\" deleted successfully"
+}
+```
+
+**Status Codes:**
+- `200`: Experience deleted successfully
+- `400`: Invalid experience ID
+- `401`: Authentication required
+- `404`: Experience not found
+- `500`: Server error
+
+**Note:** This endpoint automatically cleans up associated company logo files from the filesystem when available.
+
+## Contact Endpoints
+
+### POST /api/contact
+
+Submit a contact form message. **Public endpoint - no authentication required.**
+
+**Request Body:**
+```json
+{
+  "name": "John Doe",
+  "email": "john@example.com",
+  "message": "Hello, I'd like to discuss a project with you."
+}
+```
+
+**Validation Rules:**
+- `name`: Required, minimum 2 characters
+- `email`: Required, valid email format, maximum 254 characters
+- `message`: Required, minimum 10 characters
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "id": 1,
+    "name": "John Doe",
+    "email": "john@example.com",
+    "message": "Hello, I'd like to discuss a project with you.",
+    "read": false,
+    "createdAt": "2025-01-15T10:30:00.000Z"
+  },
+  "message": "Contact message submitted successfully"
+}
+```
+
+**Status Codes:**
+- `201`: Message submitted successfully
+- `400`: Validation error or missing required fields
+- `500`: Server error
+
 **Rate Limit:** 3 submissions per 15 minutes per IP
 
-### GET /api/admin/contacts
+### GET /api/contact
 
-Get all contact messages. **Requires authentication.**
+Get all contact messages. **Requires admin authentication.**
 
 **Query Parameters:**
 - `unread` (optional): Set to `true` to get only unread messages
@@ -331,46 +464,215 @@ Get all contact messages. **Requires authentication.**
       "id": 1,
       "name": "John Doe",
       "email": "john@example.com",
-      "message": "Hello, I'd like to discuss a project.",
+      "message": "Hello, I'd like to discuss a project with you.",
       "read": false,
       "createdAt": "2025-01-15T10:30:00.000Z"
+    },
+    {
+      "id": 2,
+      "name": "Jane Smith",
+      "email": "jane@example.com",
+      "message": "Interested in your services.",
+      "read": true,
+      "createdAt": "2025-01-14T15:20:00.000Z"
     }
-  ]
+  ],
+  "message": "Retrieved 2 contact messages"
 }
 ```
 
-### PUT /api/admin/contacts/[id]/read
+**Status Codes:**
+- `200`: Success
+- `401`: Authentication required
+- `500`: Server error
 
-Mark a contact message as read. **Requires authentication.**
+### GET /api/contact/[id]
 
-### DELETE /api/admin/contacts/[id]
+Get a specific contact message by ID. **Requires admin authentication.**
 
-Delete a contact message. **Requires authentication.**
-
-## File Upload Endpoints
-
-### POST /api/admin/upload
-
-Upload files (images, documents). **Requires authentication.**
-
-**Request:** Multipart form data with file field
+**Parameters:**
+- `id`: Contact message ID (number)
 
 **Response:**
 ```json
 {
   "success": true,
   "data": {
-    "url": "/uploads/projects/filename.jpg",
-    "filename": "filename.jpg",
-    "size": 1024000
+    "id": 1,
+    "name": "John Doe",
+    "email": "john@example.com",
+    "message": "Hello, I'd like to discuss a project with you.",
+    "read": false,
+    "createdAt": "2025-01-15T10:30:00.000Z"
+  },
+  "message": "Contact message retrieved successfully"
+}
+```
+
+**Status Codes:**
+- `200`: Message retrieved successfully
+- `400`: Invalid message ID
+- `401`: Authentication required
+- `404`: Message not found
+- `500`: Server error
+
+### PUT /api/contact/[id]
+
+Mark a contact message as read or unread. **Requires admin authentication.**
+
+**Parameters:**
+- `id`: Contact message ID (number)
+
+**Request Body:**
+```json
+{
+  "read": true
+}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "id": 1,
+    "name": "John Doe",
+    "email": "john@example.com",
+    "message": "Hello, I'd like to discuss a project with you.",
+    "read": true,
+    "createdAt": "2025-01-15T10:30:00.000Z"
+  },
+  "message": "Message marked as read"
+}
+```
+
+**Status Codes:**
+- `200`: Message updated successfully
+- `400`: Invalid message ID or read status
+- `401`: Authentication required
+- `404`: Message not found
+- `500`: Server error
+
+### DELETE /api/contact/[id]
+
+Delete a contact message. **Requires admin authentication.**
+
+**Parameters:**
+- `id`: Contact message ID (number)
+
+**Response:**
+```json
+{
+  "success": true,
+  "message": "Contact message deleted successfully"
+}
+```
+
+**Status Codes:**
+- `200`: Message deleted successfully
+- `400`: Invalid message ID
+- `401`: Authentication required
+- `404`: Message not found
+- `500`: Server error
+
+## File Upload Endpoints
+
+### POST /api/upload
+
+Upload files (project images or company logos). **Requires admin authentication.**
+
+**Request:** Multipart form data
+```javascript
+const formData = new FormData()
+formData.append('file', file)           // File object
+formData.append('type', 'project')      // 'project' or 'logo'
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "imageUrl": "/uploads/projects/filename.jpg",
+    "fileName": "secure-filename.jpg",
+    "originalName": "original-filename.jpg",
+    "size": 1024000,
+    "type": "image/jpeg"
+  },
+  "message": "File uploaded successfully"
+}
+```
+
+**Validation:**
+- **Project Images**: Max 5MB, JPG/PNG/WebP
+- **Company Logos**: Max 2MB, JPG/PNG/WebP/SVG
+- Secure filename generation with timestamp and random string
+- Path traversal protection
+
+**Status Codes:**
+- `200`: Upload successful
+- `400`: Validation error (file size, type, missing file)
+- `401`: Authentication required
+- `500`: Upload failed
+
+## File Management Endpoints
+
+### GET /api/admin/files
+
+Get storage statistics and file information. **Requires admin authentication.**
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "projects": { "count": 5, "totalSize": 2048000 },
+    "companies": { "count": 2, "totalSize": 512000 },
+    "total": { "count": 7, "totalSize": 2560000 }
   }
 }
 ```
 
-**Limits:**
-- Max file size: 5MB
-- Allowed types: Images (jpg, png, gif, webp)
-- Rate limit: 10 uploads per minute
+### DELETE /api/admin/files
+
+Clean up orphaned files (files not referenced in database). **Requires admin authentication.**
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "cleanup": {
+      "projects": { "deletedFiles": 2, "errors": [] },
+      "companies": { "deletedFiles": 1, "errors": [] }
+    },
+    "summary": {
+      "totalDeleted": 3,
+      "totalErrors": 0,
+      "errors": []
+    }
+  }
+}
+```
+
+### POST /api/admin/files/delete
+
+Delete a specific image file. **Requires admin authentication.**
+
+**Request:**
+```json
+{
+  "imageUrl": "/uploads/projects/filename.jpg"
+}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "message": "File deleted successfully"
+}
+```
 
 ## Admin User Endpoints
 
@@ -442,11 +744,11 @@ The API uses service classes for database operations:
 - `deleteProject(id)`: Delete project
 
 ### ExperienceService
-- `getAllExperiences()`: Get all experiences
+- `getAllExperiences()`: Get all experiences with chronological sorting
 - `getExperienceById(id)`: Get experience by ID
-- `createExperience(data)`: Create new experience
-- `updateExperience(id, data)`: Update experience
-- `deleteExperience(id)`: Delete experience
+- `createExperience(data)`: Create new experience with validation
+- `updateExperience(id, data)`: Update experience with partial data support
+- `deleteExperience(id)`: Delete experience and cleanup associated files
 
 ### ContactService
 - `getAllMessages()`: Get all contact messages

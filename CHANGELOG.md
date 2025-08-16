@@ -8,15 +8,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Experience CRUD API Routes**: Complete REST API for work experience management
+  - `GET /api/experiences` - Public endpoint for fetching all experiences with chronological sorting
+  - `POST /api/experiences` - Admin endpoint for creating new experiences
+  - `PUT /api/experiences/[id]` - Admin endpoint for updating existing experiences
+  - `DELETE /api/experiences/[id]` - Admin endpoint for deleting experiences with automatic logo cleanup
 - **Project CRUD API Routes**: Complete REST API for project management
   - `GET /api/projects` - Public endpoint for fetching all projects with optional featured filter
   - `POST /api/projects` - Admin endpoint for creating new projects
   - `PUT /api/projects/[id]` - Admin endpoint for updating existing projects
   - `DELETE /api/projects/[id]` - Admin endpoint for deleting projects with automatic file cleanup
 - **Comprehensive API Testing Suite**:
-  - Database-level CRUD operation tests (`npm run test-projects`)
-  - HTTP endpoint integration tests (`npm run test-projects-http`)
+  - Database-level CRUD operation tests (`npm run test-projects`, `npm run test-experiences`)
+  - HTTP endpoint integration tests (`npm run test-projects-http`, `npm run test-experiences-http`)
   - Complete validation and security tests (`npm run test-projects-complete`)
+  - Experience API verification tools (`npm run verify-experiences`)
 - **Enhanced Security & Validation**:
   - Input validation for all project data using security utilities
   - SQL injection prevention with parameterized queries
