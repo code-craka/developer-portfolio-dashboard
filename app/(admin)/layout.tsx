@@ -40,18 +40,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
         }
       }}
     >
-      <div className="min-h-screen bg-gradient-to-br from-dark-950 via-dark-900 to-dark-800 relative">
-        {/* Background decoration */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute top-0 right-0 w-96 h-96 bg-electric-blue/5 rounded-full blur-3xl"></div>
-          <div className="absolute bottom-0 left-0 w-96 h-96 bg-electric-blue/3 rounded-full blur-3xl"></div>
-        </div>
-        
-        {/* Content */}
-        <div className="relative z-10">
-          {children}
-        </div>
-      </div>
+      {children}
     </ClerkProvider>
   )
 }

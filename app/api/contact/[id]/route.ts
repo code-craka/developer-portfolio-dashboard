@@ -7,7 +7,7 @@ import { ContactMessage, ApiResponse } from '@/lib/types'
 // PUT /api/contact/[id] - Mark contact message as read/unread (admin only)
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Require admin authentication
@@ -17,8 +17,9 @@ export async function PUT(
     const headers = new Headers(SECURITY_HEADERS)
     headers.set('Content-Type', 'application/json')
 
-    // Validate ID parameter
-    const messageId = parseInt(params.id)
+    // Await params and validate ID parameter
+    const { id } = await params
+    const messageId = parseInt(id)
     if (isNaN(messageId) || messageId <= 0) {
       return NextResponse.json<ApiResponse>({
         success: false,
@@ -111,7 +112,7 @@ export async function PUT(
 // GET /api/contact/[id] - Get specific contact message (admin only)
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Require admin authentication
@@ -121,8 +122,9 @@ export async function GET(
     const headers = new Headers(SECURITY_HEADERS)
     headers.set('Content-Type', 'application/json')
 
-    // Validate ID parameter
-    const messageId = parseInt(params.id)
+    // Await params and validate ID parameter
+    const { id } = await params
+    const messageId = parseInt(id)
     if (isNaN(messageId) || messageId <= 0) {
       return NextResponse.json<ApiResponse>({
         success: false,
@@ -194,7 +196,7 @@ export async function GET(
 // DELETE /api/contact/[id] - Delete contact message (admin only)
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Require admin authentication
@@ -204,8 +206,9 @@ export async function DELETE(
     const headers = new Headers(SECURITY_HEADERS)
     headers.set('Content-Type', 'application/json')
 
-    // Validate ID parameter
-    const messageId = parseInt(params.id)
+    // Await params and validate ID parameter
+    const { id } = await params
+    const messageId = parseInt(id)
     if (isNaN(messageId) || messageId <= 0) {
       return NextResponse.json<ApiResponse>({
         success: false,

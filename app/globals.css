@@ -3,16 +3,13 @@
 @tailwind utilities;
 
 @layer base {
-  * {
-    @apply border-dark-800;
-  }
-  
   html {
     scroll-behavior: smooth;
   }
   
   body {
-    @apply bg-dark-950 text-white antialiased;
+    background-color: #0A0A0A;
+    @apply text-white antialiased;
     font-feature-settings: "rlig" 1, "calt" 1;
     background-image: radial-gradient(circle at 20% 80%, rgba(0, 212, 255, 0.05) 0%, transparent 50%),
                       radial-gradient(circle at 80% 20%, rgba(0, 212, 255, 0.05) 0%, transparent 50%);
@@ -47,7 +44,7 @@
   }
   
   .glassmorphism-card {
-    @apply bg-dark-900/50 backdrop-blur-lg border border-dark-700/50 rounded-xl shadow-glass-lg;
+    @apply bg-dark-900/50 backdrop-blur-lg border border-white/10 rounded-xl shadow-glass-lg;
   }
   
   .glassmorphism-blue {
@@ -86,7 +83,7 @@
   
   /* Form elements */
   .input-glass {
-    @apply glassmorphism-card bg-dark-900/30 border-dark-700 focus:border-electric-blue-500 focus:ring-2 focus:ring-electric-blue-500/20 text-white placeholder-dark-400 px-4 py-3 transition-all duration-300;
+    @apply glassmorphism-card bg-dark-900/30 border-white/20 focus:border-electric-blue-500 focus:ring-2 focus:ring-electric-blue-500/20 text-white placeholder-gray-400 px-4 py-3 transition-all duration-300;
   }
   
   .textarea-glass {
@@ -95,7 +92,7 @@
   
   /* Navigation */
   .nav-link {
-    @apply text-dark-300 hover:text-electric-blue-500 transition-colors duration-300 relative;
+    @apply text-gray-300 hover:text-electric-blue-500 transition-colors duration-300 relative;
   }
   
   .nav-link::after {
@@ -122,6 +119,50 @@
   }
   
   .loading-spinner {
-    @apply animate-spin rounded-full border-2 border-dark-700 border-t-electric-blue-500;
+    @apply animate-spin rounded-full border-2 border-gray-700 border-t-electric-blue-500;
+  }
+
+  /* Text utilities */
+  .line-clamp-1 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 1;
+  }
+
+  .line-clamp-2 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+
+  /* Animation utilities */
+  .animate-fade-in-up {
+    animation: fadeInUp 0.5s ease-out;
+  }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-pulse-electric {
+    animation: pulseElectric 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  @keyframes pulseElectric {
+    0%, 100% {
+      box-shadow: 0 0 20px rgba(0, 212, 255, 0.3);
+    }
+    50% {
+      box-shadow: 0 0 30px rgba(0, 212, 255, 0.6);
+    }
   }
 }
