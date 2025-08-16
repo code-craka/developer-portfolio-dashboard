@@ -93,6 +93,11 @@ Vercel provides optimal Next.js hosting with automatic deployments.
    }
    ```
 
+   **Dependencies Note**: The project uses TailwindCSS 3.4.3 with PostCSS processing. Ensure build environment supports:
+   - Node.js 18+
+   - PostCSS with autoprefixer
+   - TailwindCSS plugins (aspect-ratio, forms, line-clamp, typography)
+
 ### Netlify
 
 #### Setup Steps

@@ -2,6 +2,15 @@
 
 This document provides comprehensive documentation for all API endpoints in the Developer Portfolio Dashboard. The API supports both public endpoints for the portfolio frontend and protected admin endpoints for content management through the admin dashboard interface.
 
+## Technology Stack
+
+- **Framework**: Next.js 15.4.6 with App Router
+- **Runtime**: Node.js 18+
+- **Database**: NeonDB (PostgreSQL) with @neondatabase/serverless 0.9.0
+- **Authentication**: Clerk 6.31.1
+- **Styling**: TailwindCSS 3.4.3 with Headless UI 2.2.7
+- **Animations**: Framer Motion 10.18.0
+
 ## Base URL
 
 ```

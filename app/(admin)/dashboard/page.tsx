@@ -82,9 +82,11 @@ export default async function AdminDashboard() {
             </div>
             <h3 className="text-lg font-semibold text-white mb-2">Experience</h3>
             <p className="text-gray-400 mb-4 text-sm">Update your work experience and career timeline</p>
-            <button className="w-full bg-electric-gradient text-black px-4 py-2 rounded-lg font-semibold hover:shadow-electric transition-all duration-200 group-hover:scale-105">
-              Manage Experience
-            </button>
+            <Link href="/experience" className="block w-full">
+              <button className="w-full bg-electric-gradient text-black px-4 py-2 rounded-lg font-semibold hover:shadow-electric transition-all duration-200 group-hover:scale-105">
+                Manage Experience
+              </button>
+            </Link>
           </div>
 
           {/* Messages Card */}
@@ -103,9 +105,11 @@ export default async function AdminDashboard() {
             </div>
             <h3 className="text-lg font-semibold text-white mb-2">Messages</h3>
             <p className="text-gray-400 mb-4 text-sm">View and respond to contact form submissions</p>
-            <button className="w-full bg-electric-gradient text-black px-4 py-2 rounded-lg font-semibold hover:shadow-electric transition-all duration-200 group-hover:scale-105">
-              View Messages
-            </button>
+            <Link href="/messages" className="block w-full">
+              <button className="w-full bg-electric-gradient text-black px-4 py-2 rounded-lg font-semibold hover:shadow-electric transition-all duration-200 group-hover:scale-105">
+                View Messages
+              </button>
+            </Link>
           </div>
         </div>
 

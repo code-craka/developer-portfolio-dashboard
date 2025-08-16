@@ -1,6 +1,6 @@
 # Developer Portfolio Dashboard
 
-A modern, full-stack developer portfolio with an integrated admin dashboard built with Next.js 15.2.3, TypeScript, TailwindCSS, and NeonDB PostgreSQL.
+A modern, full-stack developer portfolio with an integrated admin dashboard built with Next.js 15.4.6, TypeScript, TailwindCSS, and NeonDB PostgreSQL.
 
 ## Features
 
@@ -23,6 +23,9 @@ A modern, full-stack developer portfolio with an integrated admin dashboard buil
 - 📊 Admin project management interface with full CRUD operations
 - 🖼️ Project image upload and management system
 - 📋 Admin dashboard layout with responsive design
+- 💼 Experience management system with chronological sorting
+- 📧 Contact form API with admin message management
+- 🧪 Comprehensive testing suite for all backend functionality
 
 ### 🚧 In Development
 - 📱 Public portfolio frontend pages
@@ -33,14 +36,15 @@ A modern, full-stack developer portfolio with an integrated admin dashboard buil
 
 ## Tech Stack
 
-- **Frontend**: Next.js 15.2.3, React 18, TypeScript
-- **Styling**: TailwindCSS with custom dark theme
-- **Animations**: Framer Motion
+- **Frontend**: Next.js 15.4.6, React 19, TypeScript
+- **Styling**: TailwindCSS 3.4.3 with custom dark theme and electric blue accents
+- **Animations**: Framer Motion 10.18.0
 - **Database**: NeonDB (PostgreSQL) with connection pooling
 - **Authentication**: Clerk Authentication v6.31.1
 - **ORM**: Custom TypeScript services with raw SQL
 - **Image Optimization**: Next.js Image component
 - **Rate Limiting**: Custom rate limiting implementation
+- **UI Components**: Headless UI 2.2.7 for accessible components
 
 ## Current Implementation Status
 
@@ -67,9 +71,10 @@ This project is actively under development. Here's what's currently functional:
 - Project management interface with CRUD operations
 - Image upload system with drag-and-drop functionality
 - Real-time notifications and error handling
+- Experience table component with filtering and sorting
 
 ### 🚧 Frontend (In Development)
-- Experience management interface (planned)
+- Experience management interface (UI components ready, integration in progress)
 - Contact message management interface (planned)
 - Public portfolio pages (planned)
 - Framer Motion animations (planned)
@@ -82,6 +87,27 @@ This project is actively under development. Here's what's currently functional:
 - NeonDB PostgreSQL database (or compatible PostgreSQL)
 - Clerk account for authentication
 - npm or yarn
+
+### Dependencies Overview
+
+**Production Dependencies:**
+- `@clerk/nextjs` (6.31.1) - Authentication
+- `@headlessui/react` (2.2.7) - Accessible UI components
+- `@neondatabase/serverless` (0.9.0) - Database driver
+- `next` (15.4.6) - React framework
+- `react` (19.1.1) & `react-dom` (19.1.1) - React library
+- `framer-motion` (10.18.0) - Animations
+- `clsx` (2.0.0) & `tailwind-merge` (2.0.0) - Conditional styling
+- `dotenv` (17.2.1) - Environment variables
+- `svix` (1.73.0) - Webhook verification
+
+**Development Dependencies:**
+- `tailwindcss` (3.4.3) - CSS framework
+- `postcss` (8.4.38) & `autoprefixer` (10.4.17) - CSS processing
+- `@tailwindcss/*` plugins - Additional Tailwind functionality
+- `typescript` (5.0.0) - Type checking
+- `tsx` (4.7.0) - TypeScript execution
+- `eslint` & `eslint-config-next` - Code linting
 
 ### Installation
 
@@ -139,6 +165,11 @@ This project is actively under development. Here's what's currently functional:
 │   │   ├── ProjectsManager.tsx   # Project management interface
 │   │   ├── ProjectsTable.tsx     # Project data table
 │   │   ├── ProjectModal.tsx      # Project create/edit modal
+│   │   ├── ExperienceManager.tsx # Experience management interface
+│   │   ├── ExperienceTable.tsx   # Experience data table
+│   │   ├── ExperienceModal.tsx   # Experience create/edit modal
+│   │   ├── ContactMessagesManager.tsx # Contact message management
+│   │   ├── ContactMessagesTable.tsx   # Contact message table
 │   │   ├── DeleteConfirmModal.tsx
 │   │   └── NotificationSystem.tsx
 │   ├── sections/                 # Page sections
@@ -166,7 +197,11 @@ This project is actively under development. Here's what's currently functional:
 ├── docs/                         # Documentation
 │   ├── DATABASE_SETUP.md         # Database setup guide
 │   ├── AUTHENTICATION_SETUP.md   # Auth setup guide
-│   └── API_DOCUMENTATION.md      # API documentation
+│   ├── API_DOCUMENTATION.md      # API documentation
+│   ├── ADMIN_INTERFACE.md        # Admin dashboard guide
+│   ├── DEPLOYMENT.md             # Production deployment guide
+│   ├── IMAGE_UPLOAD_SYSTEM.md    # File upload documentation
+│   └── STYLING_SYSTEM.md         # TailwindCSS and design system guide
 ├── .kiro/                        # Kiro configuration
 │   ├── specs/                    # Feature specifications
 │   └── steering/                 # Project guidance
@@ -226,6 +261,17 @@ See `.env.example` for all required environment variables. Key variables include
 - `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` - Clerk publishable key
 - `CLERK_SECRET_KEY` - Clerk secret key
 - `CLERK_WEBHOOK_SECRET` - Clerk webhook secret for user sync
+
+## Admin Interface
+
+The project includes a comprehensive admin dashboard for content management:
+
+- **Project Management**: Full CRUD interface with image upload at `/admin/projects`
+- **Responsive Design**: Mobile-friendly interface with glassmorphism effects
+- **Real-time Notifications**: Instant feedback for all operations
+- **Secure Authentication**: Clerk-powered authentication with role-based access
+
+See [Admin Interface Guide](./docs/ADMIN_INTERFACE.md) for detailed usage instructions.
 
 ## Database Setup
 
