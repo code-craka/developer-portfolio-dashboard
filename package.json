@@ -9,7 +9,10 @@
     "lint": "next lint",
     "init-db": "tsx scripts/init-db.ts",
     "reset-db": "tsx -e \"import { DatabaseMigrations } from './lib/migrations'; DatabaseMigrations.resetDatabase();\"",
-    "test-auth": "tsx scripts/test-auth-setup.ts"
+    "test-auth": "tsx scripts/test-auth-setup.ts",
+    "test-projects": "tsx scripts/test-projects-api.ts",
+    "test-projects-http": "tsx scripts/test-projects-http.ts",
+    "test-projects-complete": "tsx scripts/test-projects-complete.ts"
   },
   "dependencies": {
     "@clerk/nextjs": "^6.31.1",
