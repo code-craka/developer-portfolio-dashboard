@@ -1,5 +1,14 @@
 import React from 'react'
+import { Metadata } from 'next'
 import { SignIn } from '@clerk/nextjs'
+import { generateMetadata as generateSEOMetadata } from '@/lib/seo'
+
+export const metadata: Metadata = generateSEOMetadata({
+  title: 'Admin Login',
+  description: 'Admin login page for portfolio dashboard access.',
+  url: '/login',
+  noIndex: true,
+})
 
 async function ErrorMessage({ searchParams }: { searchParams: Promise<{ error?: string }> }) {
   const params = await searchParams
