@@ -11,6 +11,12 @@ const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = generateSEOMetadata({})
 
+// Check if we have the required Clerk environment variables
+const hasClerkKeys = !!(
+  process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY && 
+  process.env.CLERK_SECRET_KEY
+)
+
 export default function RootLayout({
   children,
 }: {
@@ -19,8 +25,39 @@ export default function RootLayout({
   const personSchema = generatePersonSchema()
   const websiteSchema = generateWebsiteSchema()
 
+  // If Clerk keys are missing (e.g., during build without env vars), render without ClerkProvider
+  if (!hasClerkKeys) {
+    return (
+      <html lang="en" className="dark">
+        <head>
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{
+              __html: JSON.stringify(personSchema),
+            }}
+          />
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{
+              __html: JSON.stringify(websiteSchema),
+            }}
+          />
+        </head>
+        <body className={`${inter.className} bg-dark-bg text-white`}>
+          <ErrorBoundary>
+            <ToastProvider>
+              <PerformanceMonitor />
+              {children}
+            </ToastProvider>
+          </ErrorBoundary>
+        </body>
+      </html>
+    )
+  }
+
   return (
     <ClerkProvider
+      publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}
       appearance={{
         baseTheme: undefined,
         variables: {

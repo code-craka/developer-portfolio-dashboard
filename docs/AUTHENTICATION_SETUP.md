@@ -64,6 +64,20 @@ DATABASE_URL=postgresql://...
 DATABASE_AUTHENTICATED_URL=postgresql://...
 ```
 
+#### Build-Time Environment Variable Handling
+
+The application includes graceful handling for missing Clerk environment variables during build time. The root layout (`app/layout.tsx`) checks for the presence of required Clerk keys:
+
+- `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`
+- `CLERK_SECRET_KEY`
+
+If these variables are not available during the build process, the application will render without the ClerkProvider, allowing for successful builds in CI/CD environments where authentication keys might not be available.
+
+**Important Notes:**
+- While the application can build without Clerk keys, authentication features will not function properly in production without proper environment variable configuration
+- This feature is primarily designed for build systems and deployment pipelines
+- Always ensure proper environment variables are configured in production environments
+
 ### 2. Database Setup
 
 Initialize the database with admin tables:
