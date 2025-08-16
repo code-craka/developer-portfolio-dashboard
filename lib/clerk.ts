@@ -6,10 +6,21 @@ import { AdminService } from './admin-service'
  * Server-side authentication utilities for Clerk with role-based access control
  */
 
+// Check if Clerk is properly configured
+const isClerkConfigured = !!(
+  process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY && 
+  process.env.CLERK_SECRET_KEY
+)
+
 /**
  * Get the current authenticated user or redirect to sign-in
  */
 export async function requireAuth() {
+  if (!isClerkConfigured) {
+    // During build time or when Clerk is not configured, return null
+    return null
+  }
+
   const { userId } = await auth()
   
   if (!userId) {
@@ -23,7 +34,15 @@ export async function requireAuth() {
  * Require admin authentication and role verification
  */
 export async function requireAdminAuth() {
+  if (!isClerkConfigured) {
+    return null
+  }
+
   const userId = await requireAuth()
+  
+  if (!userId) {
+    return null
+  }
   
   try {
     // Check if user has admin role in database
@@ -46,6 +65,10 @@ export async function requireAdminAuth() {
  * Get the current user data
  */
 export async function getCurrentUser() {
+  if (!isClerkConfigured) {
+    return null
+  }
+  
   const user = await currentUser()
   return user
 }
@@ -72,6 +95,10 @@ export async function getCurrentAdmin() {
  * Check if the current user is authenticated
  */
 export async function isAuthenticated() {
+  if (!isClerkConfigured) {
+    return false
+  }
+  
   const { userId } = await auth()
   return !!userId
 }
@@ -80,6 +107,10 @@ export async function isAuthenticated() {
  * Check if the current user is an admin
  */
 export async function isCurrentUserAdmin() {
+  if (!isClerkConfigured) {
+    return false
+  }
+  
   const { userId } = await auth()
   
   if (!userId) {
@@ -93,6 +124,10 @@ export async function isCurrentUserAdmin() {
  * Get user session information
  */
 export async function getAuthSession() {
+  if (!isClerkConfigured) {
+    return { userId: null, sessionId: null }
+  }
+  
   const { userId, sessionId } = await auth()
   return { userId, sessionId }
 }
@@ -140,6 +175,10 @@ export async function getAdminAuthContext() {
  * Validate session and ensure user is still authenticated
  */
 export async function validateSession() {
+  if (!isClerkConfigured) {
+    return false
+  }
+  
   try {
     const { userId } = await auth()
     return !!userId
@@ -153,6 +192,10 @@ export async function validateSession() {
  * Get user display name with fallback options
  */
 export async function getUserDisplayName() {
+  if (!isClerkConfigured) {
+    return 'Admin'
+  }
+  
   try {
     const user = await currentUser()
     if (!user) return 'Admin'

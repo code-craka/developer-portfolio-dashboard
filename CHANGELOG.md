@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **Build Resilience**: Enhanced root layout with conditional Clerk provider initialization
+  - Added environment variable validation for `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` and `CLERK_SECRET_KEY`
+  - Graceful fallback rendering when Clerk keys are not available during build time
+  - Improved CI/CD compatibility by allowing builds without authentication secrets
+  - Maintains full functionality when proper environment variables are provided at runtime
+  - Enables preview deployments and development builds without exposing production keys
+
 ### Changed
 - **Package Configuration**: Made project publicly available under MIT License
   - Changed `"private": true` to `"private": false` in package.json

@@ -423,7 +423,7 @@ export function isRetryableError(error: ApiError | Error): boolean {
 
 import React from 'react'
 
-export default {
+const ApiErrorHandler = {
   withErrorHandler,
   handleApiError,
   ApiClient,
@@ -438,3 +438,5 @@ export default {
   FileUploadError,
   RateLimitError
 }
+
+export default ApiErrorHandler

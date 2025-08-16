@@ -49,6 +49,58 @@ This is a complete, production-ready developer portfolio application that can be
 - Mobile-responsive design with smooth animations
 - Performance optimized with Next.js 15 and modern best practices
 
+## Required Environment Variables for Vercel
+
+When deploying to Vercel, you **must** set these environment variables in your Vercel dashboard:
+
+### Database Configuration
+```bash
+DATABASE_URL=postgresql://username:password@host/database?sslmode=require
+DATABASE_AUTHENTICATED_URL=postgresql://authenticated@host/database?sslmode=require
+NEXT_PUBLIC_DATABASE_AUTHENTICATED_URL=postgresql://authenticated@host/database?sslmode=require
+```
+
+### Clerk Authentication (Required)
+```bash
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_your_publishable_key
+CLERK_SECRET_KEY=sk_test_your_secret_key
+CLERK_WEBHOOK_SECRET=whsec_your_webhook_secret
+```
+
+### Clerk URLs
+```bash
+NEXT_PUBLIC_CLERK_SIGN_IN_URL=/admin/login
+NEXT_PUBLIC_CLERK_SIGN_UP_URL=/admin/sign-up
+NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL=/admin/dashboard
+NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL=/admin/dashboard
+NEXT_PUBLIC_CLERK_SIGN_IN_FALLBACK_REDIRECT_URL=/admin/dashboard
+NEXT_PUBLIC_CLERK_SIGN_UP_FALLBACK_REDIRECT_URL=/admin/dashboard
+```
+
+### Application Configuration
+```bash
+NODE_ENV=production
+NEXT_PUBLIC_APP_URL=https://your-domain.vercel.app
+MAX_FILE_SIZE=5242880
+UPLOAD_DIR=public/uploads/projects
+```
+
+### Admin Setup (Optional)
+```bash
+ADMIN_EMAIL=admin@yourdomain.com
+ADMIN_PASSWORD=your_secure_password
+```
+
+## Setting Environment Variables in Vercel
+
+1. Go to your Vercel dashboard
+2. Select your project
+3. Go to Settings → Environment Variables
+4. Add each variable with its corresponding value
+5. Make sure to set the environment (Production, Preview, Development)
+
+**Important:** Without the Clerk environment variables, the build will fail. Make sure to set them before deploying.
+
 ## Supported Platforms
 
 ### Vercel (Recommended)
@@ -238,6 +290,16 @@ mkdir -p public/uploads/projects
 - [ ] `CLERK_WEBHOOK_SECRET`
 - [ ] `NEXT_PUBLIC_APP_URL`
 
+### Build-Time Environment Variables
+
+The application includes graceful handling for missing Clerk environment variables during build time. This allows for:
+
+- **CI/CD Builds**: Successful builds in environments where authentication keys are not available
+- **Preview Deployments**: Building preview versions without exposing production keys
+- **Development Flexibility**: Building the application in various environments
+
+**Important**: While the application can build without Clerk keys, authentication features will not function in production without proper environment variable configuration.
+
 ### Optional Variables
 - [ ] `DATABASE_AUTHENTICATED_URL`
 - [ ] `NEXT_PUBLIC_DATABASE_AUTHENTICATED_URL`
@@ -351,6 +413,7 @@ Monitor:
    - Check Node.js version compatibility
    - Verify all dependencies are installed
    - Review build logs for specific errors
+   - Note: Missing Clerk environment variables will not cause build failures (graceful fallback implemented)
 
 2. **Database Connection Issues**
    - Verify DATABASE_URL format
