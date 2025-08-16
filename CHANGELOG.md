@@ -8,6 +8,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Project CRUD API Routes**: Complete REST API for project management
+  - `GET /api/projects` - Public endpoint for fetching all projects with optional featured filter
+  - `POST /api/projects` - Admin endpoint for creating new projects
+  - `PUT /api/projects/[id]` - Admin endpoint for updating existing projects
+  - `DELETE /api/projects/[id]` - Admin endpoint for deleting projects with automatic file cleanup
+- **Comprehensive API Testing Suite**:
+  - Database-level CRUD operation tests (`npm run test-projects`)
+  - HTTP endpoint integration tests (`npm run test-projects-http`)
+  - Complete validation and security tests (`npm run test-projects-complete`)
+- **Enhanced Security & Validation**:
+  - Input validation for all project data using security utilities
+  - SQL injection prevention with parameterized queries
+  - Proper error handling with consistent API responses
+  - Authentication protection for admin operations
+  - Rate limiting with different tiers for public vs admin endpoints
+- **Middleware Improvements**:
+  - Smart route protection (GET endpoints public, write operations protected)
+  - JSON error responses for API endpoints instead of redirects
+  - Method-based rate limiting for optimal performance
 - Complete Clerk Authentication setup with Next.js 15 compatibility
 - Admin login page with glassmorphism design
 - Admin dashboard with user profile integration

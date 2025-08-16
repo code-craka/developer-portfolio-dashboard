@@ -78,7 +78,7 @@ Attempt to auto-repair database issues.
 
 ### GET /api/projects
 
-Get all projects or featured projects only.
+Get all projects or featured projects only. **Public endpoint - no authentication required.**
 
 **Query Parameters:**
 - `featured` (optional): Set to `true` to get only featured projects
@@ -100,52 +100,40 @@ Get all projects or featured projects only.
       "createdAt": "2025-01-15T10:30:00.000Z",
       "updatedAt": "2025-01-15T10:30:00.000Z"
     }
-  ]
+  ],
+  "message": "Retrieved 1 projects"
 }
 ```
 
-### GET /api/projects/[id]
+**Status Codes:**
+- `200`: Success
+- `500`: Server error
 
-Get a specific project by ID.
+### POST /api/projects
 
-**Parameters:**
-- `id`: Project ID (number)
-
-**Response:**
-```json
-{
-  "success": true,
-  "data": {
-    "id": 1,
-    "title": "Project Title",
-    "description": "Project description",
-    "techStack": ["React", "TypeScript"],
-    "githubUrl": "https://github.com/user/repo",
-    "demoUrl": "https://demo.example.com",
-    "imageUrl": "/uploads/projects/image.jpg",
-    "featured": true,
-    "createdAt": "2025-01-15T10:30:00.000Z",
-    "updatedAt": "2025-01-15T10:30:00.000Z"
-  }
-}
-```
-
-### POST /api/admin/projects
-
-Create a new project. **Requires authentication.**
+Create a new project. **Requires admin authentication.**
 
 **Request Body:**
 ```json
 {
   "title": "New Project",
-  "description": "Project description",
-  "techStack": ["React", "TypeScript"],
+  "description": "Project description with at least 10 characters",
+  "techStack": ["React", "TypeScript", "Next.js"],
   "githubUrl": "https://github.com/user/repo",
   "demoUrl": "https://demo.example.com",
   "imageUrl": "/uploads/projects/image.jpg",
   "featured": false
 }
 ```
+
+**Validation Rules:**
+- `title`: Required, minimum 3 characters
+- `description`: Required, minimum 10 characters
+- `techStack`: Required, at least one technology
+- `githubUrl`: Optional, must be valid URL if provided
+- `demoUrl`: Optional, must be valid URL if provided
+- `imageUrl`: Required
+- `featured`: Optional, defaults to false
 
 **Response:**
 ```json
@@ -154,30 +142,75 @@ Create a new project. **Requires authentication.**
   "data": {
     "id": 2,
     "title": "New Project",
-    // ... other project fields
+    "description": "Project description with at least 10 characters",
+    "techStack": ["React", "TypeScript", "Next.js"],
+    "githubUrl": "https://github.com/user/repo",
+    "demoUrl": "https://demo.example.com",
+    "imageUrl": "/uploads/projects/image.jpg",
+    "featured": false,
+    "createdAt": "2025-01-15T10:30:00.000Z",
+    "updatedAt": "2025-01-15T10:30:00.000Z"
   },
   "message": "Project created successfully"
 }
 ```
 
-### PUT /api/admin/projects/[id]
+**Status Codes:**
+- `201`: Project created successfully
+- `400`: Validation error or missing required fields
+- `401`: Authentication required
+- `500`: Server error
 
-Update an existing project. **Requires authentication.**
+### PUT /api/projects/[id]
+
+Update an existing project. **Requires admin authentication.**
 
 **Parameters:**
 - `id`: Project ID (number)
 
-**Request Body:** (partial update supported)
+**Request Body:** (partial update supported - only include fields to update)
 ```json
 {
   "title": "Updated Project Title",
+  "description": "Updated description",
+  "techStack": ["React", "TypeScript", "Node.js"],
+  "githubUrl": "https://github.com/user/updated-repo",
+  "demoUrl": "https://updated-demo.example.com",
+  "imageUrl": "/uploads/projects/new-image.jpg",
   "featured": true
 }
 ```
 
-### DELETE /api/admin/projects/[id]
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "id": 1,
+    "title": "Updated Project Title",
+    "description": "Updated description",
+    "techStack": ["React", "TypeScript", "Node.js"],
+    "githubUrl": "https://github.com/user/updated-repo",
+    "demoUrl": "https://updated-demo.example.com",
+    "imageUrl": "/uploads/projects/new-image.jpg",
+    "featured": true,
+    "createdAt": "2025-01-15T10:30:00.000Z",
+    "updatedAt": "2025-01-16T14:20:00.000Z"
+  },
+  "message": "Project updated successfully"
+}
+```
 
-Delete a project. **Requires authentication.**
+**Status Codes:**
+- `200`: Project updated successfully
+- `400`: Invalid project ID or validation error
+- `401`: Authentication required
+- `404`: Project not found
+- `500`: Server error
+
+### DELETE /api/projects/[id]
+
+Delete a project and its associated image file. **Requires admin authentication.**
 
 **Parameters:**
 - `id`: Project ID (number)
@@ -186,9 +219,18 @@ Delete a project. **Requires authentication.**
 ```json
 {
   "success": true,
-  "message": "Project deleted successfully"
+  "message": "Project \"Project Title\" deleted successfully"
 }
 ```
+
+**Status Codes:**
+- `200`: Project deleted successfully
+- `400`: Invalid project ID
+- `401`: Authentication required
+- `404`: Project not found
+- `500`: Server error
+
+**Note:** This endpoint automatically cleans up associated image files from the filesystem.
 
 ## Experience Endpoints
 

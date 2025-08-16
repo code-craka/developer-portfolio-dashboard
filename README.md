@@ -148,6 +148,10 @@ import type { Project, Admin } from '@/lib/types'
 - `npm run lint` - Run ESLint
 - `npm run init-db` - Initialize database tables and indexes
 - `npm run reset-db` - Reset database (development only)
+- `npm run test-auth` - Test authentication setup
+- `npm run test-projects` - Test project CRUD database operations
+- `npm run test-projects-http` - Test project HTTP API endpoints
+- `npm run test-projects-complete` - Run comprehensive project API tests
 
 ## Environment Variables
 
@@ -172,6 +176,23 @@ This project uses NeonDB (PostgreSQL) for data storage. See [Database Setup Guid
 ### Database Health Check
 
 Visit `/api/health/db` to check database connectivity and table status.
+
+## API Endpoints
+
+The application provides a comprehensive REST API for managing portfolio content:
+
+### Public Endpoints
+- `GET /api/projects` - Fetch all projects (supports `?featured=true` filter)
+- `GET /api/health/db` - Database health check
+
+### Admin Endpoints (Authentication Required)
+- `POST /api/projects` - Create new project
+- `PUT /api/projects/[id]` - Update existing project
+- `DELETE /api/projects/[id]` - Delete project
+- `POST /api/upload` - Upload project images
+- `POST /api/webhooks/clerk` - Clerk user synchronization
+
+For detailed API documentation, see [API Documentation](./docs/API_DOCUMENTATION.md).
 
 ## License
 

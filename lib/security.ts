@@ -12,7 +12,7 @@ export const SECURITY_CONFIG = {
     ALLOWED_LOGO_TYPES: ['image/jpeg', 'image/png', 'image/webp', 'image/svg+xml'],
     MAX_FILES_PER_REQUEST: 1, // Single file upload
   },
-  
+
   // Rate Limiting Configuration
   RATE_LIMIT: {
     API_REQUESTS_PER_MINUTE: 100,
@@ -20,10 +20,10 @@ export const SECURITY_CONFIG = {
     UPLOAD_REQUESTS_PER_MINUTE: 10,
     ADMIN_API_PER_MINUTE: 200, // Higher limit for admin operations
   },
-  
+
   // CORS Configuration
   CORS: {
-    ALLOWED_ORIGINS: process.env.NODE_ENV === 'production' 
+    ALLOWED_ORIGINS: process.env.NODE_ENV === 'production'
       ? [process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000']
       : ['http://localhost:3000', 'http://127.0.0.1:3000'],
     ALLOWED_METHODS: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
@@ -40,27 +40,27 @@ export function validateEmail(email: string): boolean {
 // Validation functions for form data
 export function validateProjectData(data: ProjectFormData): { valid: boolean; errors: string[] } {
   const errors: string[] = []
-  
+
   if (!data.title || data.title.trim().length < 3) {
     errors.push('Project title must be at least 3 characters long')
   }
-  
+
   if (!data.description || data.description.trim().length < 10) {
     errors.push('Project description must be at least 10 characters long')
   }
-  
+
   if (!data.techStack || data.techStack.length === 0) {
     errors.push('At least one technology must be specified')
   }
-  
+
   if (data.githubUrl && !isValidUrl(data.githubUrl)) {
     errors.push('GitHub URL must be a valid URL')
   }
-  
+
   if (data.demoUrl && !isValidUrl(data.demoUrl)) {
     errors.push('Demo URL must be a valid URL')
   }
-  
+
   return {
     valid: errors.length === 0,
     errors
@@ -69,19 +69,19 @@ export function validateProjectData(data: ProjectFormData): { valid: boolean; er
 
 export function validateContactData(data: ContactFormData): { valid: boolean; errors: string[] } {
   const errors: string[] = []
-  
+
   if (!data.name || data.name.trim().length < 2) {
     errors.push('Name must be at least 2 characters long')
   }
-  
+
   if (!data.email || !validateEmail(data.email)) {
     errors.push('Valid email address is required')
   }
-  
+
   if (!data.message || data.message.trim().length < 10) {
     errors.push('Message must be at least 10 characters long')
   }
-  
+
   return {
     valid: errors.length === 0,
     errors
@@ -90,35 +90,35 @@ export function validateContactData(data: ContactFormData): { valid: boolean; er
 
 export function validateExperienceData(data: ExperienceFormData): { valid: boolean; errors: string[] } {
   const errors: string[] = []
-  
+
   if (!data.company || data.company.trim().length < 2) {
     errors.push('Company name must be at least 2 characters long')
   }
-  
+
   if (!data.position || data.position.trim().length < 2) {
     errors.push('Position title must be at least 2 characters long')
   }
-  
+
   if (!data.startDate) {
     errors.push('Start date is required')
   }
-  
+
   if (data.endDate && data.startDate && data.endDate < data.startDate) {
     errors.push('End date cannot be before start date')
   }
-  
+
   if (!data.description || data.description.trim().length < 10) {
     errors.push('Description must be at least 10 characters long')
   }
-  
+
   if (!data.location || data.location.trim().length < 2) {
     errors.push('Location is required')
   }
-  
+
   if (!data.employmentType) {
     errors.push('Employment type is required')
   }
-  
+
   return {
     valid: errors.length === 0,
     errors
@@ -147,21 +147,21 @@ export function sanitizeInput(input: string): string {
 export function validateFileUpload(file: File, isLogo: boolean = false): { valid: boolean; error?: string } {
   const maxSize = isLogo ? SECURITY_CONFIG.UPLOAD.MAX_LOGO_SIZE : SECURITY_CONFIG.UPLOAD.MAX_FILE_SIZE
   const allowedTypes = isLogo ? SECURITY_CONFIG.UPLOAD.ALLOWED_LOGO_TYPES : SECURITY_CONFIG.UPLOAD.ALLOWED_TYPES
-  
+
   if (file.size > maxSize) {
     return {
       valid: false,
       error: `File size exceeds maximum allowed size of ${maxSize / (1024 * 1024)}MB`
     }
   }
-  
+
   if (!allowedTypes.includes(file.type)) {
     return {
       valid: false,
       error: `File type ${file.type} is not allowed. Allowed types: ${allowedTypes.join(', ')}`
     }
   }
-  
+
   // Additional validation for file name
   if (file.name.length > 255) {
     return {
@@ -169,7 +169,7 @@ export function validateFileUpload(file: File, isLogo: boolean = false): { valid
       error: 'File name is too long (maximum 255 characters)'
     }
   }
-  
+
   return { valid: true }
 }
 
@@ -177,23 +177,23 @@ export function validateFileUpload(file: File, isLogo: boolean = false): { valid
 export function generateSecureToken(length: number = 32): string {
   const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
   let result = ''
-  
+
   for (let i = 0; i < length; i++) {
     result += chars.charAt(Math.floor(Math.random() * chars.length))
   }
-  
+
   return result
 }
 
 // Check if request is from allowed origin
 export function isAllowedOrigin(request: NextRequest): boolean {
   const origin = request.headers.get('origin')
-  
+
   if (!origin) {
     // Allow requests without origin (same-origin requests)
     return true
   }
-  
+
   return SECURITY_CONFIG.CORS.ALLOWED_ORIGINS.includes(origin)
 }
 
@@ -214,7 +214,7 @@ export function generateSecureFileName(originalName: string): string {
   const randomString = generateSecureToken(8)
   const extension = originalName.split('.').pop()?.toLowerCase() || ''
   const baseName = originalName.split('.')[0].replace(/[^a-zA-Z0-9]/g, '-').toLowerCase()
-  
+
   return `${baseName}-${timestamp}-${randomString}.${extension}`
 }
 

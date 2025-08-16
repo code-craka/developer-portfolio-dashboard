@@ -6,9 +6,13 @@ import { SECURITY_HEADERS } from './lib/security'
 // Define protected routes that require authentication
 const isProtectedRoute = createRouteMatcher([
   '/admin/dashboard(.*)',
-  '/api/projects(.*)',
-  '/api/experiences(.*)',
   '/api/upload(.*)',
+])
+
+// Define admin API routes that need authentication (for write operations)
+const isAdminApiRoute = createRouteMatcher([
+  '/api/admin(.*)',
+  '/api/webhooks(.*)',
 ])
 
 // Define public Clerk routes that should not be protected
@@ -34,7 +38,7 @@ export default clerkMiddleware(async (auth, request) => {
   }
   
   // Handle protected routes
-  if (isProtectedRoute(request)) {
+  if (isProtectedRoute(request) || isAdminApiRoute(request)) {
     if (!userId) {
       // User not authenticated, redirect to login
       const loginUrl = new URL('/admin/login', request.url)
@@ -45,6 +49,31 @@ export default clerkMiddleware(async (auth, request) => {
     // For admin routes, we'll let the page components handle role verification
     // This allows for better error handling and user experience
     // The actual role check happens in the page components using requireAdminAuth()
+  }
+
+  // Handle projects and experiences API routes - only protect write operations
+  if (request.nextUrl.pathname.startsWith('/api/projects') || 
+      request.nextUrl.pathname.startsWith('/api/experiences')) {
+    const method = request.method
+    
+    // Only protect POST, PUT, DELETE operations - GET is public
+    if (method !== 'GET' && !userId) {
+      // Return JSON error for API endpoints instead of redirect
+      return new NextResponse(
+        JSON.stringify({
+          success: false,
+          error: 'Authentication required',
+          message: 'You must be authenticated to perform this action.'
+        }),
+        {
+          status: 401,
+          headers: {
+            'Content-Type': 'application/json',
+            ...SECURITY_HEADERS
+          }
+        }
+      )
+    }
   }
 
   const response = NextResponse.next()
@@ -64,8 +93,8 @@ export default clerkMiddleware(async (auth, request) => {
     } else if (request.nextUrl.pathname.startsWith('/api/upload')) {
       rateLimiter = uploadRateLimit
     } else if (request.nextUrl.pathname.includes('/admin/') ||
-      request.nextUrl.pathname.startsWith('/api/projects') ||
-      request.nextUrl.pathname.startsWith('/api/experiences')) {
+      (request.nextUrl.pathname.startsWith('/api/projects') && request.method !== 'GET') ||
+      (request.nextUrl.pathname.startsWith('/api/experiences') && request.method !== 'GET')) {
       // Admin operations get higher rate limits
       rateLimiter = adminApiRateLimit
     }
