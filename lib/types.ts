@@ -71,6 +71,7 @@ export interface ProjectFormData {
   githubUrl?: string;
   demoUrl?: string;
   featured: boolean;
+  imageUrl: string;
 }
 
 export interface ContactFormData {
