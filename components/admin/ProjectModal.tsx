@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { Project, ApiResponse } from '@/lib/types'
-import Image from 'next/image'
+import OptimizedImage from '../ui/OptimizedImage'
 
 interface ProjectModalProps {
   project: Project | null
@@ -389,9 +389,10 @@ export default function ProjectModal({ project, onSave, onClose }: ProjectModalP
               <div className="space-y-4">
                 {imagePreview && (
                   <div className="relative w-full h-48 rounded-lg overflow-hidden bg-dark-800">
-                    <Image
+                    <OptimizedImage
                       src={imagePreview}
                       alt="Project preview"
+                      preset="card"
                       fill
                       className="object-cover"
                       sizes="(max-width: 768px) 100vw, 50vw"

@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { Project } from '@/lib/types'
-import Image from 'next/image'
+import OptimizedImage from '../ui/OptimizedImage'
 
 interface ProjectsTableProps {
   projects: Project[]
@@ -174,9 +174,10 @@ export default function ProjectsTable({ projects, loading, onEdit, onDelete }: P
                 <td className="px-6 py-4">
                   <div className="flex items-center space-x-4">
                     <div className="relative w-12 h-12 rounded-lg overflow-hidden bg-dark-800">
-                      <Image
+                      <OptimizedImage
                         src={project.imageUrl}
                         alt={project.title}
+                        preset="thumbnail"
                         fill
                         className="object-cover"
                         sizes="48px"
@@ -258,9 +259,10 @@ export default function ProjectsTable({ projects, loading, onEdit, onDelete }: P
           <div key={project.id} className="p-6">
             <div className="flex items-start space-x-4">
               <div className="relative w-16 h-16 rounded-lg overflow-hidden bg-dark-800 flex-shrink-0">
-                <Image
+                <OptimizedImage
                   src={project.imageUrl}
                   alt={project.title}
+                  preset="thumbnail"
                   fill
                   className="object-cover"
                   sizes="64px"
