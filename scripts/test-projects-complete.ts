@@ -62,7 +62,8 @@ async function testProjectCRUDComplete() {
       techStack: ['React', 'TypeScript', 'Next.js'],
       githubUrl: 'https://github.com/test/project',
       demoUrl: 'https://demo.example.com',
-      featured: true
+      featured: true,
+      imageUrl: 'https://example.com/image.jpg'
     }
     
     const validationResult = validateProjectData(validProject)
@@ -74,7 +75,8 @@ async function testProjectCRUDComplete() {
       techStack: [], // Empty
       githubUrl: 'invalid-url',
       demoUrl: 'also-invalid',
-      featured: false
+      featured: false,
+      imageUrl: '' // Empty/invalid
     }
     
     const invalidValidationResult = validateProjectData(invalidProject)
@@ -207,7 +209,8 @@ async function testProjectCRUDComplete() {
       techStack: [], // Empty tech stack
       githubUrl: 'not-a-url',
       demoUrl: 'also-not-a-url',
-      featured: false
+      featured: false,
+      imageUrl: '' // Empty imageUrl
     })
     runTest('Invalid data type validation', !invalidTypeValidation.valid)
 
@@ -249,7 +252,8 @@ async function testProjectCRUDComplete() {
       title: longTitle,
       description: 'Valid description',
       techStack: ['React'],
-      featured: false
+      featured: false,
+      imageUrl: 'https://example.com/image.jpg'
     })
     // This should pass validation but might be truncated by database constraints
     runTest('Long input handling', longTitleValidation.valid || !longTitleValidation.valid, 'Validation handles long inputs')
