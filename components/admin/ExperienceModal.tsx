@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { Experience, ApiResponse } from '@/lib/types'
-import Image from 'next/image'
+import OptimizedImage from '../ui/OptimizedImage'
 
 interface ExperienceModalProps {
   experience: Experience | null
@@ -563,9 +563,10 @@ export default function ExperienceModal({ experience, onSave, onClose }: Experie
               <div className="space-y-4">
                 {logoPreview && (
                   <div className="relative w-24 h-24 rounded-lg overflow-hidden bg-dark-800">
-                    <Image
+                    <OptimizedImage
                       src={logoPreview}
                       alt="Company logo preview"
+                      preset="company_logo"
                       fill
                       className="object-cover"
                       sizes="96px"

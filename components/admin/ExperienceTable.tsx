@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { Experience } from '@/lib/types'
-import Image from 'next/image'
+import OptimizedImage from '../ui/OptimizedImage'
 
 interface ExperienceTableProps {
   experiences: Experience[]
@@ -232,9 +232,10 @@ export default function ExperienceTable({ experiences, loading, onEdit, onDelete
                   <div className="flex items-center space-x-4">
                     <div className="relative w-12 h-12 rounded-lg overflow-hidden bg-dark-800 flex-shrink-0">
                       {experience.companyLogo ? (
-                        <Image
+                        <OptimizedImage
                           src={experience.companyLogo}
                           alt={`${experience.company} logo`}
+                          preset="company_logo"
                           fill
                           className="object-cover"
                           sizes="48px"
@@ -330,9 +331,10 @@ export default function ExperienceTable({ experiences, loading, onEdit, onDelete
             <div className="flex items-start space-x-4">
               <div className="relative w-16 h-16 rounded-lg overflow-hidden bg-dark-800 flex-shrink-0">
                 {experience.companyLogo ? (
-                  <Image
+                  <OptimizedImage
                     src={experience.companyLogo}
                     alt={`${experience.company} logo`}
+                    preset="company_logo"
                     fill
                     className="object-cover"
                     sizes="64px"
