@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { Experience, ApiResponse } from '@/lib/types'
-import OptimizedImage from '../ui/OptimizedImage'
+import OptimizedImage from '@/components/ui/OptimizedImage'
 
 interface ExperienceModalProps {
   experience: Experience | null
