@@ -18,7 +18,7 @@ export default function PortfolioLayout({ children, className = '' }: PortfolioL
       <Navigation />
       
       <PageTransition>
-        <main className="relative">
+        <main className="relative" role="main" aria-label="Main content">
           {children}
         </main>
       </PageTransition>
