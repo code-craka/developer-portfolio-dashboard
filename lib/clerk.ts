@@ -8,7 +8,7 @@ import { AdminService } from './admin-service'
 
 // Check if Clerk is properly configured
 const isClerkConfigured = !!(
-  process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY && 
+  process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY &&
   process.env.CLERK_SECRET_KEY
 )
 
@@ -22,11 +22,11 @@ export async function requireAuth() {
   }
 
   const { userId } = await auth()
-  
+
   if (!userId) {
     redirect('/admin/login')
   }
-  
+
   return userId
 }
 
@@ -39,20 +39,20 @@ export async function requireAdminAuth() {
   }
 
   const userId = await requireAuth()
-  
+
   if (!userId) {
     return null
   }
-  
+
   try {
     // Check if user has admin role in database
     const isAdmin = await AdminService.isAdmin(userId)
-    
+
     if (!isAdmin) {
       // User is authenticated but not an admin
       redirect('/admin/login?error=unauthorized')
     }
-    
+
     return userId
   } catch (error) {
     console.error('Error checking admin status:', error)
@@ -68,7 +68,7 @@ export async function getCurrentUser() {
   if (!isClerkConfigured) {
     return null
   }
-  
+
   const user = await currentUser()
   return user
 }
@@ -78,13 +78,13 @@ export async function getCurrentUser() {
  */
 export async function getCurrentAdmin() {
   const user = await getCurrentUser()
-  
+
   if (!user) {
     return null
   }
-  
+
   const admin = await AdminService.getAdminByClerkId(user.id)
-  
+
   return {
     clerkUser: user,
     adminData: admin
@@ -98,7 +98,7 @@ export async function isAuthenticated() {
   if (!isClerkConfigured) {
     return false
   }
-  
+
   const { userId } = await auth()
   return !!userId
 }
@@ -110,13 +110,13 @@ export async function isCurrentUserAdmin() {
   if (!isClerkConfigured) {
     return false
   }
-  
+
   const { userId } = await auth()
-  
+
   if (!userId) {
     return false
   }
-  
+
   return await AdminService.isAdmin(userId)
 }
 
@@ -127,7 +127,7 @@ export async function getAuthSession() {
   if (!isClerkConfigured) {
     return { userId: null, sessionId: null }
   }
-  
+
   const { userId, sessionId } = await auth()
   return { userId, sessionId }
 }
@@ -137,7 +137,7 @@ export async function getAuthSession() {
  */
 export async function getAdminAuthContext() {
   const { userId, sessionId } = await auth()
-  
+
   if (!userId) {
     return {
       isAuthenticated: false,
@@ -147,11 +147,11 @@ export async function getAdminAuthContext() {
       sessionId: null
     }
   }
-  
+
   try {
     const user = await currentUser()
     const admin = await AdminService.getAdminByClerkId(userId)
-    
+
     return {
       isAuthenticated: true,
       isAdmin: !!admin && admin.role === 'admin',
@@ -178,7 +178,7 @@ export async function validateSession() {
   if (!isClerkConfigured) {
     return false
   }
-  
+
   try {
     const { userId } = await auth()
     return !!userId
@@ -195,16 +195,16 @@ export async function getUserDisplayName() {
   if (!isClerkConfigured) {
     return 'Admin'
   }
-  
+
   try {
     const user = await currentUser()
     if (!user) return 'Admin'
-    
-    return user.firstName || 
-           user.lastName || 
-           user.username || 
-           user.emailAddresses[0]?.emailAddress?.split('@')[0] || 
-           'Admin'
+
+    return user.firstName ||
+      user.lastName ||
+      user.username ||
+      user.emailAddresses[0]?.emailAddress?.split('@')[0] ||
+      'Admin'
   } catch (error) {
     console.error('Error getting user display name:', error)
     return 'Admin'

@@ -66,17 +66,31 @@ DATABASE_AUTHENTICATED_URL=postgresql://...
 
 #### Build-Time Environment Variable Handling
 
-The application includes graceful handling for missing Clerk environment variables during build time. The root layout (`app/layout.tsx`) checks for the presence of required Clerk keys:
+The application includes intelligent environment variable handling that allows successful builds even when authentication keys are not available during build time. This is implemented in both the root layout (`app/layout.tsx`) and authentication utilities (`lib/clerk.ts`).
 
-- `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`
-- `CLERK_SECRET_KEY`
+**Root Layout Implementation (`app/layout.tsx`):**
+- Performs build-time check for required Clerk environment variables:
+  - `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`
+  - `CLERK_SECRET_KEY`
+- Conditionally renders ClerkProvider only when both keys are present
+- Provides fallback layout without ClerkProvider when keys are missing
+- Maintains all other functionality (SEO, structured data, error boundaries)
 
-If these variables are not available during the build process, the application will render without the ClerkProvider, allowing for successful builds in CI/CD environments where authentication keys might not be available.
+**Authentication Utilities (`lib/clerk.ts`):**
+- `isClerkConfigured` constant determines Clerk availability at runtime
+- All authentication functions gracefully handle missing configuration
+- Return `null` or safe defaults when Clerk is not configured
+- Prevent authentication-related errors during build time
+
+**Build Scenarios:**
+1. **With Clerk Keys**: Full authentication functionality and custom theming
+2. **Without Clerk Keys**: Application builds successfully with auth features disabled
 
 **Important Notes:**
-- While the application can build without Clerk keys, authentication features will not function properly in production without proper environment variable configuration
-- This feature is primarily designed for build systems and deployment pipelines
+- While the application can build without Clerk keys, authentication features will not function in production without proper environment variable configuration
+- This feature enables CI/CD compatibility and preview deployments without exposing production secrets
 - Always ensure proper environment variables are configured in production environments
+- The fallback behavior is transparent to users - the app simply operates without authentication features
 
 ### 2. Database Setup
 
@@ -253,6 +267,8 @@ The test suite covers:
    - Ensure `.env.local` exists and is properly formatted
    - Check that variables don't have extra spaces or quotes
    - Restart development server after changes
+   - **Build-Time Behavior**: Missing Clerk keys during build time will not cause failures due to graceful fallback implementation in `app/layout.tsx`
+   - **Runtime Behavior**: Authentication features require proper environment variables to function in production
 
 2. **Database Connection Errors**
    - Verify `DATABASE_URL` is correct

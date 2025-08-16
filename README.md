@@ -63,15 +63,29 @@ A modern, full-stack developer portfolio website with an integrated admin dashbo
 - **Rate Limiting**: Custom rate limiting implementation
 - **UI Components**: Headless UI 2.2.7 for accessible components
 
-### Build Resilience
+### Build Resilience & Environment Handling
 
-The application includes intelligent environment variable handling that allows successful builds even when authentication keys are not available during build time. This enables:
+The application includes intelligent environment variable handling implemented in `lib/clerk.ts` and the root layout (`app/layout.tsx`) that allows successful builds even when authentication keys are not available during build time. This enables:
 
 - **CI/CD Compatibility**: Builds succeed in environments without access to production secrets
-- **Preview Deployments**: Safe preview builds without exposing authentication keys
+- **Preview Deployments**: Safe preview builds without exposing authentication keys  
 - **Development Flexibility**: Multiple environment configurations without build failures
+- **Graceful Fallbacks**: Authentication functions return safe defaults when Clerk is not configured
 
-Authentication features require proper environment variables in runtime environments.
+**Technical Implementation:**
+- Build-time environment check in `app/layout.tsx` determines if Clerk keys are available
+- Conditional ClerkProvider rendering - only wraps the app when keys are present
+- `isClerkConfigured` check in `lib/clerk.ts` determines Clerk availability at runtime
+- Authentication utilities handle missing configuration gracefully
+- All auth-dependent features include fallback behavior
+- SEO metadata and structured data work regardless of Clerk configuration
+
+**Build Behavior:**
+- **With Clerk Keys**: Full authentication functionality enabled
+- **Without Clerk Keys**: Application builds and runs with authentication features disabled
+- **Runtime Detection**: Authentication status checked dynamically in components
+
+Authentication features require proper environment variables (`NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`, `CLERK_SECRET_KEY`) in runtime environments.
 
 ## Current Implementation Status
 
@@ -236,6 +250,7 @@ This project is actively under development. Here's what's currently functional:
 │   ├── API_DOCUMENTATION.md      # API documentation
 │   ├── ADMIN_INTERFACE.md        # Admin dashboard guide
 │   ├── DEPLOYMENT.md             # Production deployment guide
+│   ├── BUILD_SYSTEM.md           # Build system and CI/CD integration
 │   ├── IMAGE_UPLOAD_SYSTEM.md    # File upload documentation
 │   ├── STYLING_SYSTEM.md         # TailwindCSS and design system guide
 │   └── ANIMATION_SYSTEM.md       # Framer Motion animations and effects
