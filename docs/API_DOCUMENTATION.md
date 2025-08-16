@@ -1,6 +1,6 @@
 # API Documentation
 
-This document provides comprehensive documentation for all API endpoints in the Developer Portfolio Dashboard.
+This document provides comprehensive documentation for all API endpoints in the Developer Portfolio Dashboard. The API supports both public endpoints for the portfolio frontend and protected admin endpoints for content management through the admin dashboard interface.
 
 ## Base URL
 

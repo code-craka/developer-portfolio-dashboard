@@ -10,20 +10,19 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        // Electric blue theme colors
         'electric-blue': {
           50: '#E6F9FF',
           100: '#CCF3FF',
           200: '#99E7FF',
           300: '#66DBFF',
           400: '#33CFFF',
-          500: '#00D4FF', // Primary electric blue
+          500: '#00D4FF',
           600: '#00A3CC',
           700: '#007299',
           800: '#004166',
           900: '#001033',
+          '800-50': 'rgb(51 51 51 / 0.5)', // <-- add custom opacity variant
         },
-        // Dark theme colors
         'dark': {
           50: '#F8F8F8',
           100: '#E5E5E5',
@@ -35,15 +34,13 @@ const config: Config = {
           700: '#4D4D4D',
           800: '#333333',
           900: '#1A1A1A',
-          950: '#0A0A0A', // Primary dark background
+          950: '#0A0A0A',
         },
-        // Glassmorphism colors
         'glass': {
           'light': 'rgba(255, 255, 255, 0.1)',
           'dark': 'rgba(0, 0, 0, 0.2)',
           'blue': 'rgba(0, 212, 255, 0.1)',
         },
-        // Legacy color mappings for backward compatibility
         'dark-bg': '#0A0A0A',
         'dark-card': '#1A1A1A',
         'dark-border': '#333333',
@@ -66,61 +63,6 @@ const config: Config = {
         'electric-lg': '0 0 40px rgba(0, 212, 255, 0.4)',
         'glass': '0 8px 32px rgba(0, 0, 0, 0.1)',
         'glass-lg': '0 16px 64px rgba(0, 0, 0, 0.15)',
-      },
-      animation: {
-        'fade-in': 'fadeIn 0.5s ease-in-out',
-        'fade-in-up': 'fadeInUp 0.6s ease-out',
-        'slide-up': 'slideUp 0.5s ease-out',
-        'slide-down': 'slideDown 0.5s ease-out',
-        'slide-left': 'slideLeft 0.5s ease-out',
-        'slide-right': 'slideRight 0.5s ease-out',
-        'typewriter': 'typewriter 4s steps(40) infinite',
-        'pulse-electric': 'pulseElectric 2s ease-in-out infinite',
-        'float': 'float 3s ease-in-out infinite',
-        'glow': 'glow 2s ease-in-out infinite alternate',
-      },
-      keyframes: {
-        fadeIn: {
-          '0%': { opacity: '0' },
-          '100%': { opacity: '1' },
-        },
-        fadeInUp: {
-          '0%': { opacity: '0', transform: 'translateY(30px)' },
-          '100%': { opacity: '1', transform: 'translateY(0)' },
-        },
-        slideUp: {
-          '0%': { transform: 'translateY(20px)', opacity: '0' },
-          '100%': { transform: 'translateY(0)', opacity: '1' },
-        },
-        slideDown: {
-          '0%': { transform: 'translateY(-20px)', opacity: '0' },
-          '100%': { transform: 'translateY(0)', opacity: '1' },
-        },
-        slideLeft: {
-          '0%': { transform: 'translateX(20px)', opacity: '0' },
-          '100%': { transform: 'translateX(0)', opacity: '1' },
-        },
-        slideRight: {
-          '0%': { transform: 'translateX(-20px)', opacity: '0' },
-          '100%': { transform: 'translateX(0)', opacity: '1' },
-        },
-        typewriter: {
-          '0%': { width: '0' },
-          '50%': { width: '100%' },
-          '100%': { width: '0' },
-        },
-        pulseElectric: {
-          '0%, 100%': { boxShadow: '0 0 20px rgba(0, 212, 255, 0.3)' },
-          '50%': { boxShadow: '0 0 40px rgba(0, 212, 255, 0.6)' },
-        },
-        float: {
-          '0%, 100%': { transform: 'translateY(0px)' },
-          '50%': { transform: 'translateY(-10px)' },
-        },
-        glow: {
-          '0%': { textShadow: '0 0 10px rgba(0, 212, 255, 0.5)' },
-          '100%': { textShadow: '0 0 20px rgba(0, 212, 255, 0.8)' },
-        },
       },
       fontFamily: {
         'mono': ['JetBrains Mono', 'Fira Code', 'Consolas', 'monospace'],

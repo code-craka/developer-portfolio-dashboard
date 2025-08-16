@@ -1,5 +1,6 @@
 import { requireAdminAuth, getCurrentAdmin } from '@/lib/clerk'
 import AdminLayoutWrapper from '@/components/admin/AdminLayoutWrapper'
+import Link from 'next/link'
 
 export default async function AdminDashboard() {
   // Require admin authentication and role verification
@@ -58,9 +59,11 @@ export default async function AdminDashboard() {
             </div>
             <h3 className="text-lg font-semibold text-white mb-2">Projects</h3>
             <p className="text-gray-400 mb-4 text-sm">Manage your portfolio projects and showcase your work</p>
-            <button className="w-full bg-electric-gradient text-black px-4 py-2 rounded-lg font-semibold hover:shadow-electric transition-all duration-200 group-hover:scale-105">
-              Manage Projects
-            </button>
+            <Link href="/projects" className="block w-full">
+              <button className="w-full bg-electric-gradient text-black px-4 py-2 rounded-lg font-semibold hover:shadow-electric transition-all duration-200 group-hover:scale-105">
+                Manage Projects
+              </button>
+            </Link>
           </div>
 
           {/* Experiences Card */}
