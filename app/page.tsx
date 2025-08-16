@@ -1,17 +1,20 @@
+import PortfolioLayout from '@/components/ui/PortfolioLayout'
+import HeroSection from '@/components/sections/HeroSection'
+import AboutSection from '@/components/sections/AboutSection'
+import SkillsSection from '@/components/sections/SkillsSection'
+import ProjectsSection from '@/components/sections/ProjectsSection'
+import ExperienceSection from '@/components/sections/ExperienceSection'
+import ContactSection from '@/components/sections/ContactSection'
+
 export default function Home() {
   return (
-    <main className="min-h-screen bg-gradient-to-br from-dark-bg via-gray-900 to-dark-bg">
-      <div className="container mx-auto px-4 py-16">
-        <div className="text-center">
-          <h1 className="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-white to-electric-blue bg-clip-text text-transparent">
-            Developer Portfolio
-          </h1>
-          <p className="text-xl text-gray-300 mb-8">
-            Modern portfolio with admin dashboard - Coming Soon
-          </p>
-          <div className="w-16 h-1 bg-electric-blue mx-auto rounded-full"></div>
-        </div>
-      </div>
-    </main>
+    <PortfolioLayout>
+      <HeroSection />
+      <AboutSection />
+      <SkillsSection />
+      <ProjectsSection />
+      <ExperienceSection />
+      <ContactSection />
+    </PortfolioLayout>
   )
 }
