@@ -1,20 +1,22 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import { ClerkProvider } from '@clerk/nextjs'
+import { generateMetadata as generateSEOMetadata, generatePersonSchema, generateWebsiteSchema } from '@/lib/seo'
+import PerformanceMonitor from '@/components/ui/PerformanceMonitor'
 import './globals.css'
 
 const inter = Inter({ subsets: ['latin'] })
 
-export const metadata: Metadata = {
-  title: 'Developer Portfolio',
-  description: 'Modern developer portfolio with admin dashboard',
-}
+export const metadata: Metadata = generateSEOMetadata({})
 
 export default function RootLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
+  const personSchema = generatePersonSchema()
+  const websiteSchema = generateWebsiteSchema()
+
   return (
     <ClerkProvider
       appearance={{
@@ -47,7 +49,22 @@ export default function RootLayout({
       }}
     >
       <html lang="en" className="dark">
+        <head>
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{
+              __html: JSON.stringify(personSchema),
+            }}
+          />
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{
+              __html: JSON.stringify(websiteSchema),
+            }}
+          />
+        </head>
         <body className={`${inter.className} bg-dark-bg text-white`}>
+          <PerformanceMonitor />
           {children}
         </body>
       </html>
