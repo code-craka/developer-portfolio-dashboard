@@ -12,7 +12,12 @@
     "test-auth": "tsx scripts/test-auth-setup.ts",
     "test-projects": "tsx scripts/test-projects-api.ts",
     "test-projects-http": "tsx scripts/test-projects-http.ts",
-    "test-projects-complete": "tsx scripts/test-projects-complete.ts"
+    "test-projects-complete": "tsx scripts/test-projects-complete.ts",
+    "test-experiences": "tsx scripts/test-experiences-api.ts",
+    "test-experiences-http": "tsx scripts/test-experiences-http.ts",
+    "verify-experiences": "tsx scripts/verify-experiences-api.ts",
+    "test-contact": "tsx scripts/test-contact-api.ts",
+    "test-contact-http": "tsx scripts/test-contact-http.ts"
   },
   "dependencies": {
     "@clerk/nextjs": "^6.31.1",
