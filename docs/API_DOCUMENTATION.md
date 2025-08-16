@@ -13,6 +13,23 @@ https://your-domain.com/api (production)
 
 Most admin endpoints require authentication via Clerk. Include the Clerk session token in your requests.
 
+## Admin Dashboard Interface
+
+The API endpoints are integrated with a comprehensive admin dashboard interface that provides:
+
+- **Project Management**: Full CRUD interface at `/admin/projects` with image upload, editing, and deletion
+- **Real-time Updates**: Automatic refresh and notifications for all operations
+- **Responsive Design**: Mobile-friendly interface with glassmorphism design
+- **File Management**: Drag-and-drop image upload with validation and preview
+- **Error Handling**: User-friendly error messages and success notifications
+
+### Admin Routes
+- `/admin/dashboard` - Main dashboard overview
+- `/admin/projects` - Project management interface (✅ Implemented)
+- `/admin/experience` - Experience management interface (🚧 Planned)
+- `/admin/messages` - Contact message management interface (🚧 Planned)
+- `/admin/profile` - Admin profile management
+
 ## Rate Limiting
 
 All API endpoints are rate-limited to prevent abuse:
