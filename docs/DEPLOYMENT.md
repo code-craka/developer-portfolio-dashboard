@@ -290,15 +290,37 @@ mkdir -p public/uploads/projects
 - [ ] `CLERK_WEBHOOK_SECRET`
 - [ ] `NEXT_PUBLIC_APP_URL`
 
-### Build-Time Environment Variables
+### Build-Time Environment Variable Handling
 
-The application includes graceful handling for missing Clerk environment variables during build time. This allows for:
+The application includes intelligent environment variable handling that allows successful builds even when authentication keys are not available during build time. This feature is implemented in the root layout (`app/layout.tsx`) and authentication utilities (`lib/clerk.ts`).
 
-- **CI/CD Builds**: Successful builds in environments where authentication keys are not available
-- **Preview Deployments**: Building preview versions without exposing production keys
-- **Development Flexibility**: Building the application in various environments
+**Key Features:**
+- **Graceful Fallback**: The application checks for required Clerk environment variables (`NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` and `CLERK_SECRET_KEY`) and provides fallback behavior when they're missing
+- **CI/CD Compatibility**: Builds succeed in environments without access to production secrets
+- **Preview Deployments**: Safe preview builds without exposing authentication keys
+- **Development Flexibility**: Multiple environment configurations without build failures
 
-**Important**: While the application can build without Clerk keys, authentication features will not function in production without proper environment variable configuration.
+**Implementation Details:**
+- **Root Layout Check**: `app/layout.tsx` performs a build-time check for Clerk environment variables
+- **Conditional Provider**: ClerkProvider is only rendered when both required keys are present
+- **Fallback Layout**: When keys are missing, the app renders without ClerkProvider but maintains all other functionality
+- **Runtime Detection**: `lib/clerk.ts` includes `isClerkConfigured` check for runtime Clerk availability
+- **Authentication Utilities**: All auth functions gracefully handle missing Clerk configuration
+- **SEO Preservation**: Structured data and metadata work regardless of Clerk configuration
+
+**Build Scenarios:**
+1. **Full Configuration**: Both `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` and `CLERK_SECRET_KEY` present
+   - ClerkProvider wraps the application
+   - Full authentication functionality available
+   - Custom Clerk theming applied
+
+2. **Missing Configuration**: One or both Clerk keys missing
+   - Application renders without ClerkProvider
+   - Authentication features disabled gracefully
+   - All other functionality (portfolio, SEO, etc.) works normally
+   - Build succeeds without errors
+
+**Important**: While the application can build without Clerk keys, authentication features require proper environment variables in runtime environments. Always ensure production deployments have the correct Clerk configuration.
 
 ### Optional Variables
 - [ ] `DATABASE_AUTHENTICATED_URL`
