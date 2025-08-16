@@ -2,7 +2,8 @@
 
 import { motion } from 'framer-motion'
 import { ScrollAnimation, StaggerAnimation } from '../ui/PageTransition'
-import Image from 'next/image'
+import OptimizedImage from '../ui/OptimizedImage'
+import { ProfileSkeleton } from '../ui/Skeleton'
 
 const stats = [
     { value: '50+', label: 'Projects Completed', icon: '🚀' },
@@ -19,7 +20,11 @@ const bioText = [
 
 export default function AboutSection() {
     return (
-        <section id="about" className="py-20 relative overflow-hidden">
+        <section 
+            id="about" 
+            className="py-20 relative overflow-hidden"
+            aria-labelledby="about-heading"
+        >
             {/* Background Elements */}
             <div className="absolute inset-0 bg-gradient-to-br from-electric-blue/5 via-transparent to-electric-blue/5" />
             <div className="absolute top-1/2 left-1/4 w-96 h-96 bg-electric-blue/10 rounded-full blur-3xl opacity-20" />
@@ -28,7 +33,10 @@ export default function AboutSection() {
             <div className="container mx-auto px-4 relative z-10">
                 <ScrollAnimation>
                     <div className="text-center mb-16">
-                        <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 bg-gradient-to-r from-white via-electric-blue-300 to-electric-blue bg-clip-text text-transparent">
+                        <h2 
+                            id="about-heading"
+                            className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 bg-gradient-to-r from-white via-electric-blue-300 to-electric-blue bg-clip-text text-transparent"
+                        >
                             About Me
                         </h2>
                         <div className="w-20 h-1 bg-gradient-to-r from-electric-blue-400 to-electric-blue-600 mx-auto rounded-full shadow-electric" />
@@ -140,10 +148,11 @@ export default function AboutSection() {
                                                 </motion.div>
                                             </div>
 
-                                            {/* Uncomment and replace with actual profile image */}
-                                            {/* <Image
+                                            {/* Profile image - replace with actual photo */}
+                                            {/* <OptimizedImage
                         src="/profile-photo.jpg"
                         alt="Profile Photo"
+                        preset="profile"
                         fill
                         className="object-cover group-hover:scale-110 transition-transform duration-500"
                         priority

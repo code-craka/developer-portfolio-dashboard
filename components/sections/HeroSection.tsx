@@ -89,7 +89,12 @@ export default function HeroSection() {
   }
 
   return (
-    <section id="home" className="min-h-screen flex items-center justify-center relative overflow-hidden">
+    <section 
+      id="home" 
+      className="min-h-screen flex items-center justify-center relative overflow-hidden"
+      aria-labelledby="hero-heading"
+      role="banner"
+    >
       {/* Enhanced Gradient Background */}
       <div className="absolute inset-0 bg-gradient-to-br from-dark-950 via-dark-900 to-dark-950">
         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-electric-blue-500/5 to-transparent" />
@@ -132,13 +137,17 @@ export default function HeroSection() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
           >
-            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold mb-4">
+            <h1 
+              id="hero-heading"
+              className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold mb-4"
+            >
               <span className="block bg-gradient-to-r from-white via-electric-blue-400 to-white bg-clip-text text-transparent">
                 {name}
                 <motion.span
                   animate={{ opacity: [1, 0, 1] }}
                   transition={{ duration: 1, repeat: Infinity }}
                   className="text-electric-blue-500"
+                  aria-hidden="true"
                 >
                   |
                 </motion.span>
