@@ -17,7 +17,8 @@
     "test-experiences-http": "tsx scripts/test-experiences-http.ts",
     "verify-experiences": "tsx scripts/verify-experiences-api.ts",
     "test-contact": "tsx scripts/test-contact-api.ts",
-    "test-contact-http": "tsx scripts/test-contact-http.ts"
+    "test-contact-http": "tsx scripts/test-contact-http.ts",
+    "test-hero": "tsx scripts/test-hero-section.ts"
   },
   "dependencies": {
     "@clerk/nextjs": "^6.31.1",
