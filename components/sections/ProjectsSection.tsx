@@ -2,12 +2,12 @@
 
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { ScrollAnimation } from '../ui/PageTransition'
-import LazyImage from '../ui/LazyImage'
-import { ProjectCardSkeleton } from '../ui/Skeleton'
+import { ScrollAnimation } from '@/components/ui/PageTransition'
+import LazyImage from '@/components/ui/LazyImage'
+import { ProjectCardSkeleton } from '@/components/ui/Skeleton'
 import { Project, ApiResponse } from '@/lib/types'
 import { ArrowTopRightOnSquareIcon, CodeBracketIcon } from '@heroicons/react/24/outline'
-import StructuredData from '../seo/StructuredData'
+import StructuredData from '@/components/seo/StructuredData'
 import { generateProjectSchema } from '@/lib/seo'
 
 // Tech stack color mapping for visual consistency
