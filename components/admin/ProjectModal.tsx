@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { Project, ApiResponse } from '@/lib/types'
-import OptimizedImage from '../ui/OptimizedImage'
+import OptimizedImage from '@/components/ui/OptimizedImage'
 
 interface ProjectModalProps {
   project: Project | null

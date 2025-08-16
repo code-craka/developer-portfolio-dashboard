@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { Experience } from '@/lib/types'
-import OptimizedImage from '../ui/OptimizedImage'
+import OptimizedImage from '@/components/ui/OptimizedImage'
 
 interface ExperienceTableProps {
   experiences: Experience[]
