@@ -126,6 +126,68 @@ export function getOptimizedImageUrl(imageUrl: string, width?: number, quality?:
 }
 
 /**
+ * Image optimization presets for different use cases
+ */
+export const IMAGE_PRESETS = {
+  thumbnail: { width: 150, height: 150, quality: 80 },
+  card: { width: 400, height: 300, quality: 85 },
+  hero: { width: 1200, height: 800, quality: 90 },
+  profile: { width: 300, height: 300, quality: 90 },
+  company_logo: { width: 200, height: 200, quality: 85 },
+  project_showcase: { width: 800, height: 600, quality: 85 }
+} as const
+
+/**
+ * Get image preset configuration
+ */
+export function getImagePreset(preset: keyof typeof IMAGE_PRESETS) {
+  return IMAGE_PRESETS[preset]
+}
+
+/**
+ * Generate blur data URL for image placeholders
+ */
+export function generateBlurDataURL(width: number = 10, height: number = 10): string {
+  const svg = `
+    <svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" style="stop-color:#1a1a1a;stop-opacity:1" />
+          <stop offset="100%" style="stop-color:#2a2a2a;stop-opacity:1" />
+        </linearGradient>
+      </defs>
+      <rect width="100%" height="100%" fill="url(#grad)"/>
+    </svg>
+  `
+  
+  return `data:image/svg+xml;base64,${Buffer.from(svg).toString('base64')}`
+}
+
+/**
+ * Create optimized image props for Next.js Image component
+ */
+export function createOptimizedImageProps(
+  src: string,
+  alt: string,
+  preset?: keyof typeof IMAGE_PRESETS,
+  customOptions?: Partial<typeof IMAGE_PRESETS.thumbnail>
+) {
+  const options = preset ? getImagePreset(preset) : customOptions || {}
+  
+  return {
+    src,
+    alt,
+    width: options.width,
+    height: options.height,
+    quality: options.quality || 85,
+    placeholder: 'blur' as const,
+    blurDataURL: generateBlurDataURL(),
+    sizes: generateResponsiveImageSizes(options.width || 400),
+    priority: false, // Set to true for above-the-fold images
+  }
+}
+
+/**
  * Generate responsive image sizes for different breakpoints
  */
 export function generateResponsiveImageSizes(baseWidth: number): string {
@@ -296,4 +358,108 @@ export function generateSrcSet(imageUrl: string, widths: number[]): string {
   return widths
     .map(width => `${getOptimizedImageUrl(imageUrl, width)} ${width}w`)
     .join(', ')
+}
+
+/**
+ * Convert image to WebP format (server-side utility)
+ * Note: This would require sharp or similar library in production
+ */
+export async function convertToWebP(inputPath: string, outputPath: string, quality: number = 85): Promise<boolean> {
+  try {
+    // This is a placeholder for WebP conversion
+    // In production, you would use sharp:
+    // const sharp = require('sharp')
+    // await sharp(inputPath)
+    //   .webp({ quality })
+    //   .toFile(outputPath)
+    
+    console.log(`WebP conversion placeholder: ${inputPath} -> ${outputPath}`)
+    return true
+  } catch (error) {
+    console.error('Error converting to WebP:', error)
+    return false
+  }
+}
+
+/**
+ * Generate multiple image sizes for responsive images
+ */
+export async function generateResponsiveImages(
+  inputPath: string,
+  outputDir: string,
+  baseName: string,
+  sizes: number[] = [400, 800, 1200]
+): Promise<{ size: number; path: string; url: string }[]> {
+  const results: { size: number; path: string; url: string }[] = []
+  
+  try {
+    for (const size of sizes) {
+      const outputPath = path.join(outputDir, `${baseName}-${size}w.webp`)
+      const success = await convertToWebP(inputPath, outputPath)
+      
+      if (success) {
+        results.push({
+          size,
+          path: outputPath,
+          url: outputPath.replace(path.join(process.cwd(), 'public'), '')
+        })
+      }
+    }
+    
+    return results
+  } catch (error) {
+    console.error('Error generating responsive images:', error)
+    return []
+  }
+}
+
+/**
+ * Optimize image on upload
+ */
+export async function optimizeUploadedImage(
+  filePath: string,
+  options: {
+    maxWidth?: number
+    maxHeight?: number
+    quality?: number
+    generateResponsive?: boolean
+  } = {}
+): Promise<{
+  optimized: boolean
+  originalSize: number
+  optimizedSize?: number
+  responsiveImages?: { size: number; path: string; url: string }[]
+}> {
+  try {
+    const stats = require('fs').statSync(filePath)
+    const originalSize = stats.size
+    
+    // In production, you would implement actual image optimization here
+    // using sharp or similar library
+    
+    const result = {
+      optimized: true,
+      originalSize,
+      optimizedSize: originalSize, // Placeholder
+    }
+    
+    if (options.generateResponsive) {
+      const dir = path.dirname(filePath)
+      const baseName = path.basename(filePath, path.extname(filePath))
+      const responsiveImages = await generateResponsiveImages(filePath, dir, baseName)
+      
+      return {
+        ...result,
+        responsiveImages
+      }
+    }
+    
+    return result
+  } catch (error) {
+    console.error('Error optimizing image:', error)
+    return {
+      optimized: false,
+      originalSize: 0
+    }
+  }
 }
