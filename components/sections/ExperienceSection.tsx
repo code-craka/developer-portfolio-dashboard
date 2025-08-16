@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import { motion } from 'framer-motion'
-import { ScrollAnimation, StaggerAnimation } from '../ui/PageTransition'
+import { ScrollAnimation, StaggerAnimation } from '@/components/ui/PageTransition'
 import { Experience, ApiResponse } from '@/lib/types'
 
 export default function ExperienceSection() {
@@ -195,55 +195,193 @@ export default function ExperienceSection() {
                   }}
                   viewport={{ once: true, margin: '-100px' }}
                 >
-                  {/* Timeline dot - hidden on mobile, visible on desktop */}
-                  <div className="hidden md:block absolute left-6 top-8 w-4 h-4 bg-electric-blue-500 rounded-full border-4 border-dark-900 shadow-lg shadow-electric-blue-500/50 z-10">
-                    {/* Current position indicator */}
+                  {/* Enhanced Timeline dot - hidden on mobile, visible on desktop */}
+                  <motion.div 
+                    className="hidden md:block absolute left-6 top-8 w-4 h-4 bg-electric-blue-500 rounded-full border-4 border-dark-900 shadow-lg shadow-electric-blue-500/50 z-10"
+                    initial={{ scale: 0, opacity: 0 }}
+                    whileInView={{ scale: 1, opacity: 1 }}
+                    transition={{ 
+                      duration: 0.5, 
+                      delay: index * 0.1 + 0.3,
+                      type: 'spring',
+                      stiffness: 300
+                    }}
+                    viewport={{ once: true }}
+                    whileHover={{ scale: 1.2 }}
+                  >
+                    {/* Current position indicator with enhanced animation */}
                     {!experience.endDate && (
-                      <div className="absolute -inset-2 bg-electric-blue-500/30 rounded-full animate-pulse"></div>
+                      <>
+                        <motion.div 
+                          className="absolute -inset-2 bg-electric-blue-500/30 rounded-full"
+                          animate={{ 
+                            scale: [1, 1.5, 1],
+                            opacity: [0.3, 0.6, 0.3]
+                          }}
+                          transition={{
+                            duration: 2,
+                            repeat: Infinity,
+                            ease: 'easeInOut'
+                          }}
+                        />
+                        <motion.div 
+                          className="absolute -inset-1 bg-electric-blue-500/20 rounded-full"
+                          animate={{ 
+                            scale: [1, 1.3, 1],
+                            opacity: [0.2, 0.4, 0.2]
+                          }}
+                          transition={{
+                            duration: 2,
+                            repeat: Infinity,
+                            ease: 'easeInOut',
+                            delay: 0.5
+                          }}
+                        />
+                      </>
                     )}
-                  </div>
+                  </motion.div>
 
-                  {/* Experience card */}
-                  <div className="md:ml-20 glassmorphism-card hover:border-electric-blue-500/30 transition-all duration-300 group">
-                    <div className="p-6">
+                  {/* Enhanced Experience card */}
+                  <motion.div 
+                    className="md:ml-20 glassmorphism-card hover:border-electric-blue-500/30 transition-all duration-300 group cursor-pointer relative overflow-hidden"
+                    whileHover={{ 
+                      scale: 1.02,
+                      boxShadow: '0 0 30px rgba(0, 212, 255, 0.2)',
+                      y: -5
+                    }}
+                    whileTap={{ scale: 0.98 }}
+                    transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+                  >
+                    {/* Animated background gradient */}
+                    <motion.div
+                      className="absolute inset-0 bg-gradient-to-br from-electric-blue/5 via-transparent to-electric-blue/5 opacity-0 group-hover:opacity-100"
+                      animate={{
+                        background: [
+                          'linear-gradient(135deg, rgba(0, 212, 255, 0.05) 0%, transparent 50%, rgba(0, 212, 255, 0.05) 100%)',
+                          'linear-gradient(225deg, rgba(0, 212, 255, 0.1) 0%, transparent 50%, rgba(0, 212, 255, 0.05) 100%)',
+                          'linear-gradient(315deg, rgba(0, 212, 255, 0.05) 0%, transparent 50%, rgba(0, 212, 255, 0.1) 100%)',
+                          'linear-gradient(45deg, rgba(0, 212, 255, 0.1) 0%, transparent 50%, rgba(0, 212, 255, 0.05) 100%)',
+                          'linear-gradient(135deg, rgba(0, 212, 255, 0.05) 0%, transparent 50%, rgba(0, 212, 255, 0.05) 100%)'
+                        ]
+                      }}
+                      transition={{
+                        duration: 4,
+                        repeat: Infinity,
+                        ease: 'linear'
+                      }}
+                    />
+
+                    <div className="p-6 relative z-10">
                       {/* Header */}
                       <div className="flex items-start space-x-4 mb-4">
-                        {/* Company logo */}
-                        <div className="relative w-16 h-16 rounded-xl overflow-hidden bg-dark-800 flex-shrink-0 border border-white/10 group-hover:border-electric-blue-500/30 transition-colors">
+                        {/* Enhanced Company logo */}
+                        <motion.div 
+                          className="relative w-16 h-16 rounded-xl overflow-hidden bg-dark-800 flex-shrink-0 border border-white/10 group-hover:border-electric-blue-500/30 transition-colors"
+                          whileHover={{ 
+                            scale: 1.1,
+                            rotate: [0, -2, 2, 0],
+                            boxShadow: '0 0 20px rgba(0, 212, 255, 0.3)'
+                          }}
+                          transition={{ 
+                            duration: 0.3,
+                            rotate: { duration: 0.5 }
+                          }}
+                        >
                           {experience.companyLogo ? (
-                            <Image
-                              src={experience.companyLogo}
-                              alt={`${experience.company} logo`}
-                              fill
-                              className="object-cover"
-                              sizes="64px"
-                            />
+                            <motion.div
+                              whileHover={{ scale: 1.1 }}
+                              transition={{ duration: 0.3 }}
+                            >
+                              <Image
+                                src={experience.companyLogo}
+                                alt={`${experience.company} logo`}
+                                fill
+                                className="object-cover"
+                                sizes="64px"
+                              />
+                            </motion.div>
                           ) : (
-                            <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-700 to-gray-800">
-                              <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <motion.div 
+                              className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-700 to-gray-800"
+                              whileHover={{ 
+                                background: 'linear-gradient(135deg, #374151 0%, #1F2937 100%)'
+                              }}
+                            >
+                              <motion.svg 
+                                className="w-8 h-8 text-gray-400 group-hover:text-electric-blue-400" 
+                                fill="none" 
+                                stroke="currentColor" 
+                                viewBox="0 0 24 24"
+                                whileHover={{ 
+                                  scale: 1.1,
+                                  rotate: 5
+                                }}
+                                transition={{ duration: 0.2 }}
+                              >
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                              </svg>
-                            </div>
+                              </motion.svg>
+                            </motion.div>
                           )}
-                        </div>
+                          
+                          {/* Floating indicator for current position */}
+                          {!experience.endDate && (
+                            <motion.div
+                              className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-dark-900"
+                              animate={{
+                                scale: [1, 1.2, 1],
+                                opacity: [1, 0.7, 1]
+                              }}
+                              transition={{
+                                duration: 2,
+                                repeat: Infinity,
+                                ease: 'easeInOut'
+                              }}
+                            />
+                          )}
+                        </motion.div>
 
                         {/* Position and company info */}
                         <div className="flex-1 min-w-0">
                           <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between mb-2">
                             <div>
-                              <h3 className="text-xl font-bold text-white group-hover:text-electric-blue-400 transition-colors">
+                              <motion.h3 
+                                className="text-xl font-bold text-white group-hover:text-electric-blue-400 transition-colors"
+                                whileHover={{ 
+                                  scale: 1.02,
+                                  textShadow: '0 0 8px rgba(0, 212, 255, 0.5)'
+                                }}
+                              >
                                 {experience.position}
-                              </h3>
-                              <p className="text-electric-blue-400 font-semibold">
+                              </motion.h3>
+                              <motion.p 
+                                className="text-electric-blue-400 font-semibold"
+                                whileHover={{ 
+                                  scale: 1.02,
+                                  color: '#33CFFF'
+                                }}
+                              >
                                 {experience.company}
-                              </p>
-                              <p className="text-sm text-gray-400 flex items-center mt-1">
-                                <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              </motion.p>
+                              <motion.p 
+                                className="text-sm text-gray-400 flex items-center mt-1"
+                                whileHover={{ color: '#D1D5DB' }}
+                              >
+                                <motion.svg 
+                                  className="w-4 h-4 mr-1" 
+                                  fill="none" 
+                                  stroke="currentColor" 
+                                  viewBox="0 0 24 24"
+                                  whileHover={{ 
+                                    scale: 1.1,
+                                    rotate: [0, -5, 5, 0]
+                                  }}
+                                  transition={{ duration: 0.3 }}
+                                >
                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                                </svg>
+                                </motion.svg>
                                 {experience.location}
-                              </p>
+                              </motion.p>
                             </div>
 
                             {/* Date range and employment type */}
@@ -282,12 +420,24 @@ export default function ExperienceSection() {
                           <h4 className="text-sm font-semibold text-gray-400 mb-2">Technologies Used</h4>
                           <div className="flex flex-wrap gap-2">
                             {experience.technologies.map((tech, techIndex) => (
-                              <span
+                              <motion.span
                                 key={techIndex}
-                                className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-electric-blue-500/20 text-electric-blue-400 border border-electric-blue-500/30 hover:bg-electric-blue-500/30 transition-colors"
+                                className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-electric-blue-500/20 text-electric-blue-400 border border-electric-blue-500/30 hover:bg-electric-blue-500/30 transition-colors cursor-pointer"
+                                whileHover={{ 
+                                  scale: 1.05,
+                                  backgroundColor: 'rgba(0, 212, 255, 0.3)',
+                                  boxShadow: '0 0 10px rgba(0, 212, 255, 0.3)'
+                                }}
+                                whileTap={{ scale: 0.95 }}
+                                initial={{ opacity: 0, scale: 0.8 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                transition={{ 
+                                  duration: 0.3,
+                                  delay: techIndex * 0.05
+                                }}
                               >
                                 {tech}
-                              </span>
+                              </motion.span>
                             ))}
                           </div>
                         </div>
@@ -347,7 +497,7 @@ export default function ExperienceSection() {
                         </div>
                       )}
                     </div>
-                  </div>
+                  </motion.div>
                 </motion.div>
               ))}
             </StaggerAnimation>

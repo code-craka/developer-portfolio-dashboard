@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion'
 import { useState, useEffect } from 'react'
-import { ScrollAnimation } from '../ui/PageTransition'
+import { ScrollAnimation } from '@/components/ui/PageTransition'
 
 // Typewriter effect hook
 const useTypewriter = (text: string, speed: number = 100) => {

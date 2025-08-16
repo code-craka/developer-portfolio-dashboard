@@ -1,9 +1,9 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { ScrollAnimation, StaggerAnimation } from '../ui/PageTransition'
-import OptimizedImage from '../ui/OptimizedImage'
-import { ProfileSkeleton } from '../ui/Skeleton'
+import { ScrollAnimation, StaggerAnimation } from '@/components/ui/PageTransition'
+import OptimizedImage from '@/components/ui/OptimizedImage'
+import { ProfileSkeleton } from '@/components/ui/Skeleton'
 
 const stats = [
     { value: '50+', label: 'Projects Completed', icon: '🚀' },

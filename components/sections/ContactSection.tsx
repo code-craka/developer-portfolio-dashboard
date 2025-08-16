@@ -1,7 +1,9 @@
 'use client'
 
 import { useState } from 'react'
-import { ScrollAnimation } from '../ui/PageTransition'
+import { motion, AnimatePresence } from 'framer-motion'
+import { ScrollAnimation, StaggerAnimation } from '@/components/ui/PageTransition'
+import { InteractiveButton } from '@/components/ui/InteractiveElements'
 import { ContactFormData } from '@/lib/types'
 
 interface FormErrors {
@@ -173,176 +175,450 @@ export default function ContactSection() {
         
         <ScrollAnimation delay={0.2}>
           <div className="max-w-2xl mx-auto">
-            {/* Success Message */}
-            {formState.isSuccess && (
-              <div className="mb-8 p-6 bg-green-500/10 backdrop-blur-xl border border-green-500/20 rounded-xl">
-                <div className="flex items-center space-x-3">
-                  <div className="flex-shrink-0">
-                    <svg className="w-6 h-6 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                    </svg>
-                  </div>
-                  <div>
-                    <h3 className="text-green-400 font-semibold">Message Sent Successfully!</h3>
-                    <p className="text-green-300/80 text-sm mt-1">
-                      Thank you for reaching out. I&apos;ll get back to you as soon as possible.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Error Message */}
-            {formState.isError && (
-              <div className="mb-8 p-6 bg-red-500/10 backdrop-blur-xl border border-red-500/20 rounded-xl">
-                <div className="flex items-center space-x-3">
-                  <div className="flex-shrink-0">
-                    <svg className="w-6 h-6 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                  </div>
-                  <div>
-                    <h3 className="text-red-400 font-semibold">Error Sending Message</h3>
-                    <p className="text-red-300/80 text-sm mt-1">
-                      {formState.errorMessage}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Contact Form */}
-            <form onSubmit={handleSubmit} className="bg-black/20 backdrop-blur-xl border border-white/10 rounded-xl p-8 shadow-glass-lg">
-              <div className="space-y-6">
-                {/* Name Field */}
-                <div>
-                  <label htmlFor="name" className="block text-sm font-medium text-gray-300 mb-2">
-                    Name *
-                  </label>
-                  <input
-                    type="text"
-                    id="name"
-                    value={formData.name}
-                    onChange={(e) => handleInputChange('name', e.target.value)}
-                    className={`w-full px-4 py-3 bg-black/30 backdrop-blur-sm border rounded-lg text-white placeholder-gray-400 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-electric-blue-500/50 focus:border-electric-blue-500 ${
-                      errors.name ? 'border-red-500/50' : 'border-white/20 hover:border-white/30'
-                    }`}
-                    placeholder="Your full name"
-                    disabled={formState.isSubmitting}
-                  />
-                  {errors.name && (
-                    <p className="mt-2 text-sm text-red-400 flex items-center space-x-1">
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                      </svg>
-                      <span>{errors.name}</span>
-                    </p>
-                  )}
-                </div>
-
-                {/* Email Field */}
-                <div>
-                  <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-2">
-                    Email *
-                  </label>
-                  <input
-                    type="email"
-                    id="email"
-                    value={formData.email}
-                    onChange={(e) => handleInputChange('email', e.target.value)}
-                    className={`w-full px-4 py-3 bg-black/30 backdrop-blur-sm border rounded-lg text-white placeholder-gray-400 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-electric-blue-500/50 focus:border-electric-blue-500 ${
-                      errors.email ? 'border-red-500/50' : 'border-white/20 hover:border-white/30'
-                    }`}
-                    placeholder="your.email@example.com"
-                    disabled={formState.isSubmitting}
-                  />
-                  {errors.email && (
-                    <p className="mt-2 text-sm text-red-400 flex items-center space-x-1">
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                      </svg>
-                      <span>{errors.email}</span>
-                    </p>
-                  )}
-                </div>
-
-                {/* Message Field */}
-                <div>
-                  <label htmlFor="message" className="block text-sm font-medium text-gray-300 mb-2">
-                    Message *
-                  </label>
-                  <textarea
-                    id="message"
-                    rows={6}
-                    value={formData.message}
-                    onChange={(e) => handleInputChange('message', e.target.value)}
-                    className={`w-full px-4 py-3 bg-black/30 backdrop-blur-sm border rounded-lg text-white placeholder-gray-400 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-electric-blue-500/50 focus:border-electric-blue-500 resize-none ${
-                      errors.message ? 'border-red-500/50' : 'border-white/20 hover:border-white/30'
-                    }`}
-                    placeholder="Tell me about your project or how I can help you..."
-                    disabled={formState.isSubmitting}
-                  />
-                  {errors.message && (
-                    <p className="mt-2 text-sm text-red-400 flex items-center space-x-1">
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                      </svg>
-                      <span>{errors.message}</span>
-                    </p>
-                  )}
-                </div>
-
-                {/* Submit Button */}
-                <button
-                  type="submit"
-                  disabled={formState.isSubmitting || Object.values(errors).some(error => error !== undefined)}
-                  className="w-full bg-gradient-to-r from-electric-blue-600 to-electric-blue-400 hover:from-electric-blue-500 hover:to-electric-blue-300 text-white font-semibold py-4 px-6 rounded-lg transition-all duration-200 transform hover:scale-[1.02] hover:shadow-electric focus:outline-none focus:ring-2 focus:ring-electric-blue-500/50 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none disabled:hover:shadow-none"
+            {/* Animated Success Message */}
+            <AnimatePresence>
+              {formState.isSuccess && (
+                <motion.div 
+                  className="mb-8 p-6 bg-green-500/10 backdrop-blur-xl border border-green-500/20 rounded-xl overflow-hidden"
+                  initial={{ opacity: 0, y: -20, scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: -20, scale: 0.95 }}
+                  transition={{ duration: 0.5, type: 'spring', stiffness: 300 }}
                 >
-                  {formState.isSubmitting ? (
-                    <div className="flex items-center justify-center space-x-2">
-                      <svg className="animate-spin w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                      </svg>
-                      <span>Sending Message...</span>
-                    </div>
-                  ) : (
-                    <div className="flex items-center justify-center space-x-2">
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-                      </svg>
-                      <span>Send Message</span>
-                    </div>
-                  )}
-                </button>
-              </div>
-            </form>
+                  {/* Success animation background */}
+                  <motion.div
+                    className="absolute inset-0 bg-gradient-to-r from-green-500/5 via-green-400/10 to-green-500/5"
+                    animate={{
+                      x: ['-100%', '100%']
+                    }}
+                    transition={{
+                      duration: 2,
+                      repeat: Infinity,
+                      ease: 'linear'
+                    }}
+                  />
+                  
+                  <div className="flex items-center space-x-3 relative z-10">
+                    <motion.div 
+                      className="flex-shrink-0"
+                      initial={{ scale: 0, rotate: -180 }}
+                      animate={{ scale: 1, rotate: 0 }}
+                      transition={{ delay: 0.2, type: 'spring', stiffness: 300 }}
+                    >
+                      <motion.svg 
+                        className="w-6 h-6 text-green-400" 
+                        fill="none" 
+                        stroke="currentColor" 
+                        viewBox="0 0 24 24"
+                        whileHover={{ scale: 1.1, rotate: 5 }}
+                      >
+                        <motion.path 
+                          strokeLinecap="round" 
+                          strokeLinejoin="round" 
+                          strokeWidth={2} 
+                          d="M5 13l4 4L19 7"
+                          initial={{ pathLength: 0 }}
+                          animate={{ pathLength: 1 }}
+                          transition={{ delay: 0.3, duration: 0.5 }}
+                        />
+                      </motion.svg>
+                    </motion.div>
+                    <motion.div
+                      initial={{ opacity: 0, x: -10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.4 }}
+                    >
+                      <h3 className="text-green-400 font-semibold">Message Sent Successfully!</h3>
+                      <p className="text-green-300/80 text-sm mt-1">
+                        Thank you for reaching out. I&apos;ll get back to you as soon as possible.
+                      </p>
+                    </motion.div>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
 
-            {/* Contact Information */}
-            <div className="mt-12 grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="bg-black/20 backdrop-blur-xl border border-white/10 rounded-xl p-6 text-center">
-                <div className="w-12 h-12 bg-electric-blue-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <svg className="w-6 h-6 text-electric-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                  </svg>
-                </div>
-                <h3 className="text-white font-semibold mb-2">Email</h3>
-                <p className="text-gray-400 text-sm">
-                  Prefer email? Drop me a line directly
-                </p>
-              </div>
+            {/* Animated Error Message */}
+            <AnimatePresence>
+              {formState.isError && (
+                <motion.div 
+                  className="mb-8 p-6 bg-red-500/10 backdrop-blur-xl border border-red-500/20 rounded-xl"
+                  initial={{ opacity: 0, y: -20, scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: -20, scale: 0.95 }}
+                  transition={{ duration: 0.5, type: 'spring', stiffness: 300 }}
+                >
+                  <div className="flex items-center space-x-3">
+                    <motion.div 
+                      className="flex-shrink-0"
+                      animate={{ 
+                        rotate: [0, -5, 5, -5, 5, 0],
+                        scale: [1, 1.1, 1]
+                      }}
+                      transition={{ 
+                        duration: 0.6,
+                        times: [0, 0.2, 0.4, 0.6, 0.8, 1]
+                      }}
+                    >
+                      <svg className="w-6 h-6 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                    </motion.div>
+                    <motion.div
+                      initial={{ opacity: 0, x: -10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.2 }}
+                    >
+                      <h3 className="text-red-400 font-semibold">Error Sending Message</h3>
+                      <p className="text-red-300/80 text-sm mt-1">
+                        {formState.errorMessage}
+                      </p>
+                    </motion.div>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
 
-              <div className="bg-black/20 backdrop-blur-xl border border-white/10 rounded-xl p-6 text-center">
-                <div className="w-12 h-12 bg-electric-blue-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <svg className="w-6 h-6 text-electric-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                  </svg>
-                </div>
-                <h3 className="text-white font-semibold mb-2">Quick Response</h3>
-                <p className="text-gray-400 text-sm">
-                  I typically respond within 24 hours
-                </p>
+            {/* Enhanced Contact Form */}
+            <motion.form 
+              onSubmit={handleSubmit} 
+              className="bg-black/20 backdrop-blur-xl border border-white/10 rounded-xl p-8 shadow-glass-lg relative overflow-hidden"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.3 }}
+            >
+              {/* Form background animation */}
+              <motion.div
+                className="absolute inset-0 bg-gradient-to-br from-electric-blue/5 via-transparent to-electric-blue/5 opacity-0"
+                animate={{ opacity: [0, 0.3, 0] }}
+                transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+              />
+
+              <div className="space-y-6 relative z-10">
+                <StaggerAnimation staggerDelay={0.1}>
+                  {/* Name Field */}
+                  <motion.div
+                    whileHover={{ scale: 1.01 }}
+                    transition={{ type: 'spring', stiffness: 300 }}
+                  >
+                    <motion.label 
+                      htmlFor="name" 
+                      className="block text-sm font-medium text-gray-300 mb-2"
+                      whileHover={{ color: '#00D4FF' }}
+                    >
+                      Name *
+                    </motion.label>
+                    <motion.input
+                      type="text"
+                      id="name"
+                      value={formData.name}
+                      onChange={(e) => handleInputChange('name', e.target.value)}
+                      className={`w-full px-4 py-3 bg-black/30 backdrop-blur-sm border rounded-lg text-white placeholder-gray-400 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-electric-blue-500/50 focus:border-electric-blue-500 will-change-transform ${
+                        errors.name ? 'border-red-500/50' : 'border-white/20 hover:border-white/30'
+                      }`}
+                      placeholder="Your full name"
+                      disabled={formState.isSubmitting}
+                      whileFocus={{ 
+                        scale: 1.02,
+                        boxShadow: '0 0 20px rgba(0, 212, 255, 0.2)'
+                      }}
+                      whileHover={{ 
+                        borderColor: 'rgba(255, 255, 255, 0.4)'
+                      }}
+                    />
+                    <AnimatePresence>
+                      {errors.name && (
+                        <motion.p 
+                          className="mt-2 text-sm text-red-400 flex items-center space-x-1"
+                          initial={{ opacity: 0, y: -10, scale: 0.9 }}
+                          animate={{ opacity: 1, y: 0, scale: 1 }}
+                          exit={{ opacity: 0, y: -10, scale: 0.9 }}
+                          transition={{ duration: 0.2 }}
+                        >
+                          <motion.svg 
+                            className="w-4 h-4" 
+                            fill="none" 
+                            stroke="currentColor" 
+                            viewBox="0 0 24 24"
+                            animate={{ rotate: [0, -5, 5, 0] }}
+                            transition={{ duration: 0.5 }}
+                          >
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                          </motion.svg>
+                          <span>{errors.name}</span>
+                        </motion.p>
+                      )}
+                    </AnimatePresence>
+                  </motion.div>
+
+                  {/* Email Field */}
+                  <motion.div
+                    whileHover={{ scale: 1.01 }}
+                    transition={{ type: 'spring', stiffness: 300 }}
+                  >
+                    <motion.label 
+                      htmlFor="email" 
+                      className="block text-sm font-medium text-gray-300 mb-2"
+                      whileHover={{ color: '#00D4FF' }}
+                    >
+                      Email *
+                    </motion.label>
+                    <motion.input
+                      type="email"
+                      id="email"
+                      value={formData.email}
+                      onChange={(e) => handleInputChange('email', e.target.value)}
+                      className={`w-full px-4 py-3 bg-black/30 backdrop-blur-sm border rounded-lg text-white placeholder-gray-400 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-electric-blue-500/50 focus:border-electric-blue-500 will-change-transform ${
+                        errors.email ? 'border-red-500/50' : 'border-white/20 hover:border-white/30'
+                      }`}
+                      placeholder="your.email@example.com"
+                      disabled={formState.isSubmitting}
+                      whileFocus={{ 
+                        scale: 1.02,
+                        boxShadow: '0 0 20px rgba(0, 212, 255, 0.2)'
+                      }}
+                      whileHover={{ 
+                        borderColor: 'rgba(255, 255, 255, 0.4)'
+                      }}
+                    />
+                    <AnimatePresence>
+                      {errors.email && (
+                        <motion.p 
+                          className="mt-2 text-sm text-red-400 flex items-center space-x-1"
+                          initial={{ opacity: 0, y: -10, scale: 0.9 }}
+                          animate={{ opacity: 1, y: 0, scale: 1 }}
+                          exit={{ opacity: 0, y: -10, scale: 0.9 }}
+                          transition={{ duration: 0.2 }}
+                        >
+                          <motion.svg 
+                            className="w-4 h-4" 
+                            fill="none" 
+                            stroke="currentColor" 
+                            viewBox="0 0 24 24"
+                            animate={{ rotate: [0, -5, 5, 0] }}
+                            transition={{ duration: 0.5 }}
+                          >
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                          </motion.svg>
+                          <span>{errors.email}</span>
+                        </motion.p>
+                      )}
+                    </AnimatePresence>
+                  </motion.div>
+
+                  {/* Message Field */}
+                  <motion.div
+                    whileHover={{ scale: 1.01 }}
+                    transition={{ type: 'spring', stiffness: 300 }}
+                  >
+                    <motion.label 
+                      htmlFor="message" 
+                      className="block text-sm font-medium text-gray-300 mb-2"
+                      whileHover={{ color: '#00D4FF' }}
+                    >
+                      Message *
+                    </motion.label>
+                    <motion.textarea
+                      id="message"
+                      rows={6}
+                      value={formData.message}
+                      onChange={(e) => handleInputChange('message', e.target.value)}
+                      className={`w-full px-4 py-3 bg-black/30 backdrop-blur-sm border rounded-lg text-white placeholder-gray-400 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-electric-blue-500/50 focus:border-electric-blue-500 resize-none will-change-transform ${
+                        errors.message ? 'border-red-500/50' : 'border-white/20 hover:border-white/30'
+                      }`}
+                      placeholder="Tell me about your project or how I can help you..."
+                      disabled={formState.isSubmitting}
+                      whileFocus={{ 
+                        scale: 1.02,
+                        boxShadow: '0 0 20px rgba(0, 212, 255, 0.2)'
+                      }}
+                      whileHover={{ 
+                        borderColor: 'rgba(255, 255, 255, 0.4)'
+                      }}
+                    />
+                    <AnimatePresence>
+                      {errors.message && (
+                        <motion.p 
+                          className="mt-2 text-sm text-red-400 flex items-center space-x-1"
+                          initial={{ opacity: 0, y: -10, scale: 0.9 }}
+                          animate={{ opacity: 1, y: 0, scale: 1 }}
+                          exit={{ opacity: 0, y: -10, scale: 0.9 }}
+                          transition={{ duration: 0.2 }}
+                        >
+                          <motion.svg 
+                            className="w-4 h-4" 
+                            fill="none" 
+                            stroke="currentColor" 
+                            viewBox="0 0 24 24"
+                            animate={{ rotate: [0, -5, 5, 0] }}
+                            transition={{ duration: 0.5 }}
+                          >
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                          </motion.svg>
+                          <span>{errors.message}</span>
+                        </motion.p>
+                      )}
+                    </AnimatePresence>
+                  </motion.div>
+
+                  {/* Enhanced Submit Button */}
+                  <InteractiveButton
+                    variant="electric"
+                    size="lg"
+                    onClick={() => {}}
+                    disabled={formState.isSubmitting || Object.values(errors).some(error => error !== undefined)}
+                    loading={formState.isSubmitting}
+                    className="w-full"
+                  >
+                    {!formState.isSubmitting && (
+                      <>
+                        <motion.svg 
+                          className="w-5 h-5" 
+                          fill="none" 
+                          stroke="currentColor" 
+                          viewBox="0 0 24 24"
+                          whileHover={{ rotate: 15, scale: 1.1 }}
+                          transition={{ type: 'spring', stiffness: 300 }}
+                        >
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                        </motion.svg>
+                        <span>Send Message</span>
+                      </>
+                    )}
+                  </InteractiveButton>
+                </StaggerAnimation>
               </div>
-            </div>
+            </motion.form>
+
+            {/* Enhanced Contact Information */}
+            <motion.div 
+              className="mt-12 grid grid-cols-1 md:grid-cols-2 gap-6"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.5 }}
+            >
+              <StaggerAnimation staggerDelay={0.1}>
+                <motion.div 
+                  className="bg-black/20 backdrop-blur-xl border border-white/10 rounded-xl p-6 text-center group cursor-pointer"
+                  whileHover={{ 
+                    scale: 1.05, 
+                    borderColor: 'rgba(0, 212, 255, 0.3)',
+                    boxShadow: '0 0 30px rgba(0, 212, 255, 0.2)'
+                  }}
+                  whileTap={{ scale: 0.98 }}
+                  transition={{ type: 'spring', stiffness: 300 }}
+                >
+                  <motion.div 
+                    className="w-12 h-12 bg-electric-blue-500/20 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-electric-blue-500/30 transition-colors duration-300"
+                    whileHover={{ 
+                      rotate: [0, -10, 10, 0],
+                      scale: 1.1
+                    }}
+                    transition={{ duration: 0.5 }}
+                  >
+                    <motion.svg 
+                      className="w-6 h-6 text-electric-blue-400 group-hover:text-electric-blue-300" 
+                      fill="none" 
+                      stroke="currentColor" 
+                      viewBox="0 0 24 24"
+                      whileHover={{ scale: 1.1 }}
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                    </motion.svg>
+                  </motion.div>
+                  <motion.h3 
+                    className="text-white font-semibold mb-2 group-hover:text-electric-blue-300 transition-colors duration-300"
+                    whileHover={{ scale: 1.05 }}
+                  >
+                    Email
+                  </motion.h3>
+                  <p className="text-gray-400 text-sm group-hover:text-gray-300 transition-colors duration-300">
+                    Prefer email? Drop me a line directly
+                  </p>
+                  
+                  {/* Floating particles on hover */}
+                  <motion.div
+                    className="absolute -top-1 -right-1 w-2 h-2 bg-electric-blue/50 rounded-full opacity-0 group-hover:opacity-100"
+                    animate={{
+                      y: [0, -8, 0],
+                      opacity: [0, 1, 0]
+                    }}
+                    transition={{
+                      duration: 2,
+                      repeat: Infinity,
+                      ease: 'easeInOut'
+                    }}
+                  />
+                </motion.div>
+
+                <motion.div 
+                  className="bg-black/20 backdrop-blur-xl border border-white/10 rounded-xl p-6 text-center group cursor-pointer"
+                  whileHover={{ 
+                    scale: 1.05, 
+                    borderColor: 'rgba(0, 212, 255, 0.3)',
+                    boxShadow: '0 0 30px rgba(0, 212, 255, 0.2)'
+                  }}
+                  whileTap={{ scale: 0.98 }}
+                  transition={{ type: 'spring', stiffness: 300 }}
+                >
+                  <motion.div 
+                    className="w-12 h-12 bg-electric-blue-500/20 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-electric-blue-500/30 transition-colors duration-300"
+                    whileHover={{ 
+                      rotate: [0, 15, -15, 0],
+                      scale: 1.1
+                    }}
+                    transition={{ duration: 0.5 }}
+                  >
+                    <motion.svg 
+                      className="w-6 h-6 text-electric-blue-400 group-hover:text-electric-blue-300" 
+                      fill="none" 
+                      stroke="currentColor" 
+                      viewBox="0 0 24 24"
+                      whileHover={{ scale: 1.1 }}
+                    >
+                      <motion.path 
+                        strokeLinecap="round" 
+                        strokeLinejoin="round" 
+                        strokeWidth={2} 
+                        d="M13 10V3L4 14h7v7l9-11h-7z"
+                        animate={{
+                          pathLength: [1, 0.8, 1]
+                        }}
+                        transition={{
+                          duration: 2,
+                          repeat: Infinity,
+                          ease: 'easeInOut'
+                        }}
+                      />
+                    </motion.svg>
+                  </motion.div>
+                  <motion.h3 
+                    className="text-white font-semibold mb-2 group-hover:text-electric-blue-300 transition-colors duration-300"
+                    whileHover={{ scale: 1.05 }}
+                  >
+                    Quick Response
+                  </motion.h3>
+                  <p className="text-gray-400 text-sm group-hover:text-gray-300 transition-colors duration-300">
+                    I typically respond within 24 hours
+                  </p>
+                  
+                  {/* Floating particles on hover */}
+                  <motion.div
+                    className="absolute -bottom-1 -left-1 w-1.5 h-1.5 bg-electric-blue/30 rounded-full opacity-0 group-hover:opacity-100"
+                    animate={{
+                      y: [0, 6, 0],
+                      opacity: [0, 0.7, 0]
+                    }}
+                    transition={{
+                      duration: 2.5,
+                      repeat: Infinity,
+                      ease: 'easeInOut',
+                      delay: 0.5
+                    }}
+                  />
+                </motion.div>
+              </StaggerAnimation>
+            </motion.div>
           </div>
         </ScrollAnimation>
       </div>

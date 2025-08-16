@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { ScrollAnimation, StaggerAnimation } from '../ui/PageTransition'
+import { ScrollAnimation, StaggerAnimation } from '@/components/ui/PageTransition'
 
 // Skill categories with icons and technologies
 const skillCategories = [
@@ -125,81 +125,178 @@ export default function SkillsSection() {
                                         {category.skills.map((skill, skillIndex) => (
                                             <motion.div
                                                 key={skill.name}
-                                                className="group relative bg-black/30 backdrop-blur-xl border border-white/10 rounded-xl p-4 md:p-6 text-center hover:border-electric-blue/50 transition-all duration-300 cursor-pointer"
+                                                className="group relative bg-black/30 backdrop-blur-xl border border-white/10 rounded-xl p-4 md:p-6 text-center hover:border-electric-blue/50 transition-all duration-300 cursor-pointer will-change-transform"
                                                 whileHover={{
                                                     scale: 1.05,
                                                     boxShadow: '0 0 30px rgba(0, 212, 255, 0.2)',
-                                                    y: -5
+                                                    y: -5,
+                                                    rotateY: 5,
+                                                    rotateX: 5
                                                 }}
-                                                whileTap={{ scale: 0.95 }}
-                                                initial={{ opacity: 0, y: 20 }}
-                                                whileInView={{ opacity: 1, y: 0 }}
+                                                whileTap={{ 
+                                                    scale: 0.95,
+                                                    rotateY: 0,
+                                                    rotateX: 0
+                                                }}
+                                                initial={{ opacity: 0, y: 20, rotateX: -15 }}
+                                                whileInView={{ opacity: 1, y: 0, rotateX: 0 }}
                                                 transition={{
                                                     duration: 0.4,
-                                                    delay: skillIndex * 0.05
+                                                    delay: skillIndex * 0.05,
+                                                    type: 'spring',
+                                                    stiffness: 100
                                                 }}
                                                 viewport={{ once: true }}
+                                                style={{ transformStyle: 'preserve-3d' }}
                                             >
-                                                {/* Glassmorphism overlay */}
-                                                <div className="absolute inset-0 bg-gradient-to-br from-electric-blue/5 to-transparent rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                                                {/* Glassmorphism overlay with gradient animation */}
+                                                <motion.div 
+                                                    className="absolute inset-0 bg-gradient-to-br from-electric-blue/5 to-transparent rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                                                    animate={{
+                                                        background: [
+                                                            'linear-gradient(135deg, rgba(0, 212, 255, 0.05) 0%, transparent 100%)',
+                                                            'linear-gradient(225deg, rgba(0, 212, 255, 0.1) 0%, transparent 100%)',
+                                                            'linear-gradient(315deg, rgba(0, 212, 255, 0.05) 0%, transparent 100%)',
+                                                            'linear-gradient(45deg, rgba(0, 212, 255, 0.1) 0%, transparent 100%)',
+                                                            'linear-gradient(135deg, rgba(0, 212, 255, 0.05) 0%, transparent 100%)'
+                                                        ]
+                                                    }}
+                                                    transition={{
+                                                        duration: 4,
+                                                        repeat: Infinity,
+                                                        ease: 'linear'
+                                                    }}
+                                                />
 
+                                                {/* Skill content */}
                                                 <div className="relative z-10">
-                                                    {/* Skill Icon */}
+                                                    {/* Skill Icon with enhanced animations */}
                                                     <motion.div
                                                         className="text-3xl md:text-4xl mb-3 group-hover:scale-110 transition-transform duration-300"
-                                                        whileHover={{ rotate: [0, -10, 10, 0] }}
-                                                        transition={{ duration: 0.5 }}
+                                                        whileHover={{ 
+                                                            rotate: [0, -10, 10, -5, 5, 0],
+                                                            scale: [1, 1.2, 1.1, 1.15, 1.1, 1.1]
+                                                        }}
+                                                        transition={{ 
+                                                            duration: 0.6,
+                                                            type: 'spring',
+                                                            stiffness: 300
+                                                        }}
+                                                        animate={{
+                                                            y: [0, -2, 0],
+                                                        }}
+                                                        style={{
+                                                            animationDelay: `${skillIndex * 0.1}s`,
+                                                            animationDuration: '3s',
+                                                            animationIterationCount: 'infinite'
+                                                        }}
                                                     >
                                                         {skill.icon}
                                                     </motion.div>
 
-                                                    {/* Skill Name */}
-                                                    <h4 className="text-white font-semibold text-sm md:text-base mb-3 group-hover:text-electric-blue-300 transition-colors duration-300">
+                                                    {/* Skill Name with typewriter effect on hover */}
+                                                    <motion.h4 
+                                                        className="text-white font-semibold text-sm md:text-base mb-3 group-hover:text-electric-blue-300 transition-colors duration-300"
+                                                        whileHover={{
+                                                            textShadow: '0 0 8px rgba(0, 212, 255, 0.6)'
+                                                        }}
+                                                    >
                                                         {skill.name}
-                                                    </h4>
+                                                    </motion.h4>
 
-                                                    {/* Skill Level Progress Bar */}
-                                                    <div className="w-full bg-gray-700/50 rounded-full h-2 mb-2">
+                                                    {/* Enhanced Skill Level Progress Bar */}
+                                                    <div className="w-full bg-gray-700/50 rounded-full h-2 mb-2 overflow-hidden">
                                                         <motion.div
-                                                            className={`h-2 rounded-full bg-gradient-to-r ${category.color} shadow-electric`}
-                                                            initial={{ width: 0 }}
-                                                            whileInView={{ width: `${skill.level}%` }}
+                                                            className={`h-2 rounded-full bg-gradient-to-r ${category.color} shadow-electric relative`}
+                                                            initial={{ width: 0, opacity: 0.7 }}
+                                                            whileInView={{ width: `${skill.level}%`, opacity: 1 }}
+                                                            whileHover={{ 
+                                                                boxShadow: '0 0 15px rgba(0, 212, 255, 0.5)',
+                                                                scale: 1.02
+                                                            }}
                                                             transition={{
-                                                                duration: 1,
+                                                                duration: 1.2,
                                                                 delay: skillIndex * 0.1,
                                                                 ease: 'easeOut'
                                                             }}
                                                             viewport={{ once: true }}
-                                                        />
+                                                        >
+                                                            {/* Animated shimmer effect */}
+                                                            <motion.div
+                                                                className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent"
+                                                                animate={{
+                                                                    x: ['-100%', '100%']
+                                                                }}
+                                                                transition={{
+                                                                    duration: 2,
+                                                                    repeat: Infinity,
+                                                                    ease: 'linear',
+                                                                    delay: skillIndex * 0.2
+                                                                }}
+                                                            />
+                                                        </motion.div>
                                                     </div>
 
-                                                    {/* Skill Level Percentage */}
+                                                    {/* Skill Level Percentage with counter animation */}
                                                     <motion.div
-                                                        className="text-xs text-gray-400 group-hover:text-electric-blue-400 transition-colors duration-300"
-                                                        initial={{ opacity: 0 }}
-                                                        whileInView={{ opacity: 1 }}
+                                                        className="text-xs text-gray-400 group-hover:text-electric-blue-400 transition-colors duration-300 font-mono"
+                                                        initial={{ opacity: 0, scale: 0.8 }}
+                                                        whileInView={{ opacity: 1, scale: 1 }}
+                                                        whileHover={{ scale: 1.1 }}
                                                         transition={{
                                                             duration: 0.5,
                                                             delay: skillIndex * 0.1 + 0.5
                                                         }}
                                                         viewport={{ once: true }}
                                                     >
-                                                        {skill.level}%
+                                                        <motion.span
+                                                            initial={{ opacity: 0 }}
+                                                            animate={{ opacity: 1 }}
+                                                            transition={{ delay: skillIndex * 0.1 + 1 }}
+                                                        >
+                                                            {skill.level}%
+                                                        </motion.span>
                                                     </motion.div>
                                                 </div>
 
-                                                {/* Floating particles effect on hover */}
+                                                {/* Enhanced floating particles effect */}
                                                 <motion.div
                                                     className="absolute -top-1 -right-1 w-2 h-2 bg-electric-blue/50 rounded-full opacity-0 group-hover:opacity-100"
                                                     animate={{
                                                         y: [0, -10, 0],
-                                                        opacity: [0, 1, 0]
+                                                        opacity: [0, 1, 0],
+                                                        scale: [0.5, 1, 0.5]
                                                     }}
                                                     transition={{
                                                         duration: 2,
                                                         repeat: Infinity,
-                                                        ease: 'easeInOut'
+                                                        ease: 'easeInOut',
+                                                        delay: skillIndex * 0.1
                                                     }}
+                                                />
+                                                <motion.div
+                                                    className="absolute -bottom-1 -left-1 w-1.5 h-1.5 bg-electric-blue/30 rounded-full opacity-0 group-hover:opacity-100"
+                                                    animate={{
+                                                        y: [0, 8, 0],
+                                                        opacity: [0, 0.7, 0],
+                                                        scale: [0.3, 1, 0.3]
+                                                    }}
+                                                    transition={{
+                                                        duration: 2.5,
+                                                        repeat: Infinity,
+                                                        ease: 'easeInOut',
+                                                        delay: skillIndex * 0.1 + 0.5
+                                                    }}
+                                                />
+
+                                                {/* Ripple effect on tap */}
+                                                <motion.div
+                                                    className="absolute inset-0 rounded-xl border-2 border-electric-blue/0 group-active:border-electric-blue/50"
+                                                    whileTap={{
+                                                        scale: [1, 1.05, 1],
+                                                        borderColor: ['rgba(0, 212, 255, 0)', 'rgba(0, 212, 255, 0.5)', 'rgba(0, 212, 255, 0)']
+                                                    }}
+                                                    transition={{ duration: 0.3 }}
                                                 />
                                             </motion.div>
                                         ))}
