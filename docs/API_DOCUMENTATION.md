@@ -1,6 +1,19 @@
 # API Documentation
 
-This document provides comprehensive documentation for all API endpoints in the Developer Portfolio Dashboard. The API supports both public endpoints for the portfolio frontend and protected admin endpoints for content management through the admin dashboard interface.
+This document provides comprehensive documentation for all API endpoints in the Developer Portfolio Dashboard. This is an **open-source project** available under the MIT License.
+
+## Overview
+
+The API supports both public endpoints for the portfolio frontend and protected admin endpoints for content management through the admin dashboard interface.
+
+**Key Features:**
+- Complete CRUD operations for projects, experiences, and contact messages
+- Secure admin authentication with Clerk integration
+- File upload system with validation and cleanup
+- Rate limiting and comprehensive security headers
+- Database health monitoring and auto-repair
+- Responsive admin dashboard with real-time updates
+- Public portfolio endpoints for displaying content
 
 ## Technology Stack
 
@@ -158,7 +171,7 @@ Create a new project. **Requires admin authentication.**
 - `techStack`: Required, at least one technology
 - `githubUrl`: Optional, must be valid URL if provided
 - `demoUrl`: Optional, must be valid URL if provided
-- `imageUrl`: Required
+- `imageUrl`: Required, cannot be empty string
 - `featured`: Optional, defaults to false
 
 **Response:**
