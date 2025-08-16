@@ -74,7 +74,7 @@ export async function POST(request: NextRequest) {
 
     // Parse request body
     const body = await request.json()
-    const projectData: ProjectFormData & { imageUrl: string } = body
+    const projectData: ProjectFormData = body
 
     // Validate required fields
     if (!projectData.imageUrl) {

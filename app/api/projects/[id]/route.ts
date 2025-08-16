@@ -125,7 +125,8 @@ export async function PUT(
         techStack: updateData.techStack || existingProject[0].techStack,
         githubUrl: updateData.githubUrl !== undefined ? updateData.githubUrl : existingProject[0].githubUrl,
         demoUrl: updateData.demoUrl !== undefined ? updateData.demoUrl : existingProject[0].demoUrl,
-        featured: updateData.featured !== undefined ? updateData.featured : existingProject[0].featured
+        featured: updateData.featured !== undefined ? updateData.featured : existingProject[0].featured,
+        imageUrl: updateData.imageUrl || existingProject[0].imageUrl
       }
 
       const validation = validateProjectData(validationData)
