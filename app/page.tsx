@@ -6,6 +6,8 @@ import SkillsSection from '@/components/sections/SkillsSection'
 import ProjectsSection from '@/components/sections/ProjectsSection'
 import ExperienceSection from '@/components/sections/ExperienceSection'
 import ContactSection from '@/components/sections/ContactSection'
+import FloatingActions from '@/components/ui/FloatingActions'
+import { AnimationPerformanceMonitor } from '@/components/ui/AnimationOptimizer'
 import { generateMetadata as generateSEOMetadata } from '@/lib/seo'
 
 export const metadata: Metadata = generateSEOMetadata({
@@ -23,6 +25,8 @@ export default function Home() {
       <ProjectsSection />
       <ExperienceSection />
       <ContactSection />
+      <FloatingActions />
+      <AnimationPerformanceMonitor />
     </PortfolioLayout>
   )
 }
