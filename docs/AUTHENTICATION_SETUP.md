@@ -48,10 +48,10 @@ The authentication system provides secure access to the admin dashboard with the
 Ensure the following environment variables are set in `.env.local`:
 
 ```bash
-# Clerk Authentication
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_...
-CLERK_SECRET_KEY=sk_test_...
-CLERK_WEBHOOK_SECRET=whsec_...
+# Clerk Authentication (Development Keys)
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_your_development_key_here
+CLERK_SECRET_KEY=sk_test_your_development_key_here
+CLERK_WEBHOOK_SECRET=whsec_your_webhook_secret_here
 
 # Clerk URLs
 NEXT_PUBLIC_CLERK_SIGN_IN_URL=/admin/login
@@ -275,6 +275,27 @@ Returns admin statistics and metrics.
 - Secrets management
 - Database connection security
 - TLS/SSL enforcement
+
+### Security Best Practices
+
+#### Environment Variable Security
+- **Never commit production keys to version control**
+- Use different keys for development (`pk_test_`, `sk_test_`) and production (`pk_live_`, `sk_live_`)
+- Store production keys securely in your deployment platform's environment variable system
+- Regularly rotate webhook secrets and API keys
+- Use placeholder values in documentation and example files
+
+#### Key Management
+- Development keys should be used only in local development environments
+- Production keys should be configured directly in your hosting platform (Vercel, Netlify, etc.)
+- Webhook secrets should be unique and regularly rotated
+- Never expose keys in client-side code or public repositories
+
+#### Access Control
+- Implement proper role-based access control
+- Use database-backed admin verification
+- Monitor authentication attempts and failures
+- Implement rate limiting on authentication endpoints
 
 ## Testing
 

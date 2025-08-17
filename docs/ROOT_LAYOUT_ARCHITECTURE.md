@@ -288,7 +288,7 @@ return (
 
 ```bash
 # Test with authentication
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_... npm run build
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_your_development_key_here npm run build
 
 # Test without authentication
 unset NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY

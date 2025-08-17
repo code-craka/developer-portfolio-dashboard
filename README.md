@@ -269,6 +269,7 @@ This project is actively under development. Here's what's currently functional:
 │   ├── BUILD_SYSTEM.md           # Build system, performance optimization, and CI/CD integration
 │   ├── ADMIN_INTERFACE.md        # Admin dashboard guide
 │   ├── DEPLOYMENT.md             # Production deployment guide
+│   ├── SECURITY_GUIDE.md         # Security best practices and guidelines
 │   ├── ERROR_HANDLING_GUIDE.md   # Error logging and monitoring system
 │   ├── IMAGE_UPLOAD_SYSTEM.md    # File upload documentation
 │   ├── STYLING_SYSTEM.md         # TailwindCSS and design system guide
@@ -330,9 +331,11 @@ import type { Project, Admin } from '@/lib/types'
 See `.env.example` for all required environment variables. Key variables include:
 
 - `DATABASE_URL` - NeonDB PostgreSQL connection string
-- `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` - Clerk publishable key
-- `CLERK_SECRET_KEY` - Clerk secret key
+- `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` - Clerk publishable key (use `pk_test_` for development, `pk_live_` for production)
+- `CLERK_SECRET_KEY` - Clerk secret key (use `sk_test_` for development, `sk_live_` for production)
 - `CLERK_WEBHOOK_SECRET` - Clerk webhook secret for user sync
+
+**Security Note**: Never commit production keys to version control. Use placeholder values in documentation and store actual keys securely in your deployment platform's environment variable system. See [Security Guide](./docs/SECURITY_GUIDE.md) for detailed security best practices.
 
 ## Admin Interface
 

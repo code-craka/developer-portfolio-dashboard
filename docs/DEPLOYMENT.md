@@ -62,9 +62,9 @@ NEXT_PUBLIC_DATABASE_AUTHENTICATED_URL=postgresql://authenticated@host/database?
 
 ### Clerk Authentication (Required)
 ```bash
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_your_publishable_key
-CLERK_SECRET_KEY=sk_test_your_secret_key
-CLERK_WEBHOOK_SECRET=whsec_your_webhook_secret
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_live_your_publishable_key_here
+CLERK_SECRET_KEY=sk_live_your_secret_key_here
+CLERK_WEBHOOK_SECRET=whsec_your_webhook_secret_here
 ```
 
 ### Clerk URLs
@@ -127,13 +127,13 @@ Vercel provides optimal Next.js hosting with automatic deployments.
    NEXT_PUBLIC_DATABASE_AUTHENTICATED_URL=postgresql://authenticated@hostname/database?sslmode=require
    
    # Clerk Authentication
-   NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_live_your_publishable_key
-   CLERK_SECRET_KEY=sk_live_your_secret_key
+   NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_live_your_publishable_key_here
+   CLERK_SECRET_KEY=sk_live_your_secret_key_here
    NEXT_PUBLIC_CLERK_SIGN_IN_URL=/admin/login
    NEXT_PUBLIC_CLERK_SIGN_UP_URL=/admin/login
    NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL=/admin/dashboard
    NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL=/admin/dashboard
-   CLERK_WEBHOOK_SECRET=whsec_your_webhook_secret
+   CLERK_WEBHOOK_SECRET=whsec_your_webhook_secret_here
    
    # Application
    NEXT_PUBLIC_APP_URL=https://your-domain.vercel.app
@@ -499,10 +499,19 @@ Monitor:
 - [ ] Remote pattern matching for external images
 
 ### Authentication Security
-- [ ] Live Clerk keys configured
+- [ ] Live Clerk keys configured (never commit to version control)
+- [ ] Production keys use `pk_live_` and `sk_live_` prefixes
+- [ ] Development and production keys are separate
 - [ ] Webhook signature verification enabled
 - [ ] Proper session management
 - [ ] Admin route protection
+
+### Environment Variable Security
+- [ ] Production keys stored securely in deployment platform
+- [ ] No hardcoded secrets in source code
+- [ ] Placeholder values used in documentation
+- [ ] Regular key rotation schedule established
+- [ ] Access to production keys is restricted
 
 ### Database Security
 - [ ] SSL connections enforced
