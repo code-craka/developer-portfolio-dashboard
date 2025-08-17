@@ -284,11 +284,14 @@ const stats = await getStorageStats()
 ## Performance Considerations
 
 ### Image Optimization
-- Next.js Image component integration
-- Lazy loading support
-- WebP conversion
-- Responsive image sizing
-- Automatic optimization
+- Next.js Image component integration with production domain allowlisting
+- Lazy loading support with intersection observer
+- WebP/AVIF format conversion with automatic selection
+- Responsive image sizing with multiple device breakpoints (640px to 3840px)
+- Multiple image sizes for different use cases (16px to 384px)
+- Automatic optimization and compression
+- CDN-friendly caching headers (1 year cache for uploaded images)
+- Secure remote pattern matching for external images
 
 ### File Management
 - Orphaned file cleanup
@@ -318,7 +321,46 @@ The test covers:
 # File upload limits (optional, defaults provided)
 MAX_FILE_SIZE=5242880          # 5MB in bytes
 MAX_LOGO_SIZE=2097152          # 2MB in bytes
+
+# Production domain configuration (for Next.js Image optimization)
+NEXT_PUBLIC_APP_URL=https://creavibe.pro
 ```
+
+### Next.js Image Configuration
+The image system is configured in `next.config.js` with production-ready settings:
+
+```javascript
+images: {
+  domains: ['localhost', 'creavibe.pro', 'clerk.creavibe.pro'],
+  formats: ['image/webp', 'image/avif'],
+  deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
+  imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
+  remotePatterns: [
+    {
+      protocol: 'https',
+      hostname: 'creavibe.pro',
+    },
+    {
+      protocol: 'https',
+      hostname: '*.creavibe.pro',
+    },
+    {
+      protocol: 'https',
+      hostname: 'images.clerk.dev',
+    },
+    {
+      protocol: 'https',
+      hostname: 'img.clerk.com',
+    },
+  ],
+}
+```
+
+**Security Features:**
+- **Domain Allowlisting**: Only approved domains can serve images
+- **Pattern Matching**: Secure external image loading with hostname validation
+- **Clerk Integration**: Approved domains for user profile images
+- **Protocol Enforcement**: HTTPS-only for external images
 
 ### Security Configuration
 Located in `lib/security.ts`:

@@ -4,7 +4,15 @@
   "private": false,
   "license": "MIT",
   "description": "A modern, full-stack developer portfolio website with an integrated admin dashboard for content management",
-  "keywords": ["portfolio", "dashboard", "nextjs", "typescript", "tailwindcss", "clerk", "neondb"],
+  "keywords": [
+    "portfolio",
+    "dashboard",
+    "nextjs",
+    "typescript",
+    "tailwindcss",
+    "clerk",
+    "neondb"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/yourusername/developer-portfolio-dashboard.git"
@@ -36,7 +44,12 @@
     "verify-experiences": "tsx scripts/verify-experiences-api.ts",
     "test-contact": "tsx scripts/test-contact-api.ts",
     "test-contact-http": "tsx scripts/test-contact-http.ts",
-    "test-hero": "tsx scripts/test-hero-section.ts"
+    "test-hero": "tsx scripts/test-hero-section.ts",
+    "analyze": "ANALYZE=true npm run build",
+    "build:production": "NODE_ENV=production npm run build",
+    "deploy:check": "tsx scripts/deployment-check.ts",
+    "deploy:prepare": "npm run deploy:check && npm run build:production",
+    "verify:production": "tsx scripts/verify-production-setup.ts"
   },
   "dependencies": {
     "@clerk/nextjs": "^6.31.1",
@@ -54,6 +67,7 @@
     "tailwind-merge": "^2.0.0"
   },
   "devDependencies": {
+    "@next/bundle-analyzer": "^15.4.6",
     "@tailwindcss/aspect-ratio": "^0.4.2",
     "@tailwindcss/forms": "^0.5.7",
     "@tailwindcss/line-clamp": "^0.4.4",

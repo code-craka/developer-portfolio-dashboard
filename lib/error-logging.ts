@@ -32,7 +32,18 @@ class ErrorLogger {
   }
 
   private generateSessionId(): string {
-    return `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+    // Use crypto.randomUUID() for secure random session ID generation
+    if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+      return `session_${Date.now()}_${crypto.randomUUID()}`
+    }
+    // Fallback for environments without crypto.randomUUID
+    const array = new Uint8Array(16)
+    if (typeof crypto !== 'undefined' && crypto.getRandomValues) {
+      crypto.getRandomValues(array)
+      return `session_${Date.now()}_${Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('')}`
+    }
+    // Last resort fallback (should not be used in production)
+    return `session_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`
   }
 
   private setupGlobalErrorHandlers() {
@@ -125,7 +136,7 @@ class ErrorLogger {
   }
 
   private generateErrorId(): string {
-    return `error_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+    return `error_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`
   }
 
   private async sendToMonitoringService(errorLog: ErrorLog) {

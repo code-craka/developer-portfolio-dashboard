@@ -99,7 +99,7 @@ ADMIN_PASSWORD=your_secure_password
 4. Add each variable with its corresponding value
 5. Make sure to set the environment (Production, Preview, Development)
 
-**Important:** Without the Clerk environment variables, the build will fail. Make sure to set them before deploying.
+**Important:** The application includes build-time resilience for missing Clerk environment variables, but authentication features require proper configuration in production environments.
 
 ## Supported Platforms
 
@@ -150,7 +150,17 @@ Vercel provides optimal Next.js hosting with automatic deployments.
    ```
 
 3. **Build Configuration**
-   Create `vercel.json`:
+   The project includes optimized `next.config.js` with production settings:
+   ```javascript
+   // Automatic optimizations included:
+   // - Gzip compression
+   // - Security headers
+   // - Bundle splitting
+   // - Image optimization
+   // - Static asset caching
+   ```
+
+   Optional `vercel.json` for additional configuration:
    ```json
    {
      "buildCommand": "npm run build",
@@ -162,10 +172,15 @@ Vercel provides optimal Next.js hosting with automatic deployments.
          "maxDuration": 30
        }
      },
-     "rewrites": [
+     "headers": [
        {
-         "source": "/api/webhooks/clerk",
-         "destination": "/api/webhooks/clerk"
+         "source": "/uploads/(.*)",
+         "headers": [
+           {
+             "key": "Cache-Control",
+             "value": "public, max-age=31536000, immutable"
+           }
+         ]
        }
      ]
    }
@@ -249,9 +264,10 @@ Vercel provides optimal Next.js hosting with automatic deployments.
    - Add your production domain to Clerk dashboard
    - Set up proper redirect URLs
 
-3. **Webhook Configuration**
+3. **Webhook Configuration** (Optional)
    - Set webhook URL to: `https://your-domain.com/api/webhooks/clerk`
-   - Configure webhook events: `user.created`, `user.updated`, `user.deleted`
+   - Configure webhook events: `user.created`, `user.updated`, `user.deleted`, `session.created`, `session.ended`
+   - **Note**: Webhooks provide basic event logging. Admin functionality works without webhooks.
    - Copy webhook secret to environment variables
 
 ### Security Considerations
@@ -333,21 +349,87 @@ The application includes intelligent environment variable handling that allows s
 
 ### Build Optimization
 
-1. **Enable Compression**
+The application includes comprehensive production optimizations in `next.config.js`:
+
+1. **Automatic Optimizations**
    ```javascript
-   // next.config.js
+   // next.config.js - Production Configuration
    module.exports = {
-     compress: true,
+     compress: true,                    // Gzip compression
+     poweredByHeader: false,           // Remove X-Powered-By header
+     
+     // Bundle splitting for optimal loading
+     webpack: (config, { dev, isServer }) => {
+       if (!dev) {
+         config.optimization.splitChunks = {
+           chunks: 'all',
+           cacheGroups: {
+             vendor: {
+               test: /[\\/]node_modules[\\/]/,
+               name: 'vendors',
+               chunks: 'all',
+             },
+             common: {
+               name: 'common',
+               minChunks: 2,
+               chunks: 'all',
+               enforce: true,
+             },
+           },
+         };
+       }
+       return config;
+     },
+     
+     // Image optimization with production domains
      images: {
-       domains: ['your-domain.com'],
+       domains: ['localhost', 'creavibe.pro', 'clerk.creavibe.pro'],
        formats: ['image/webp', 'image/avif'],
+       deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
+       imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
+       remotePatterns: [
+         {
+           protocol: 'https',
+           hostname: 'creavibe.pro',
+         },
+         {
+           protocol: 'https',
+           hostname: '*.creavibe.pro',
+         },
+         {
+           protocol: 'https',
+           hostname: 'images.clerk.dev',
+         },
+         {
+           protocol: 'https',
+           hostname: 'img.clerk.com',
+         },
+       ],
+     },
+     
+     // Package import optimization
+     experimental: {
+       optimizePackageImports: ['framer-motion', '@headlessui/react'],
+       serverComponentsExternalPackages: ['@neondatabase/serverless'],
      },
    }
    ```
 
-2. **Bundle Analysis**
+2. **Static Asset Caching**
+   - Uploaded images cached for 1 year with immutable headers
+   - Automatic cache invalidation on file changes
+   - CDN-friendly cache headers
+
+3. **Image Security and Optimization**
+   - Production domains allowlisted for security (`creavibe.pro`, `*.creavibe.pro`)
+   - Clerk image domains configured (`images.clerk.dev`, `img.clerk.com`)
+   - Multiple device sizes and image formats for optimal loading
+   - Remote pattern matching for secure external image loading
+
+4. **Bundle Analysis**
    ```bash
    npm install --save-dev @next/bundle-analyzer
+   ANALYZE=true npm run build
    ```
 
 ### Database Optimization
@@ -363,11 +445,17 @@ The application includes intelligent environment variable handling that allows s
 ### CDN Configuration
 
 1. **Static Assets**
-   - Use Vercel's built-in CDN
-   - Or configure CloudFront for AWS deployments
+   - Use Vercel's built-in CDN with automatic optimization
+   - Long-term caching configured for uploaded images (1 year)
+   - Immutable cache headers for optimal CDN performance
 
 2. **Image Optimization**
-   - Next.js Image component provides automatic optimization
+   - Next.js Image component with WebP/AVIF support
+   - Automatic format selection based on browser support
+   - Responsive image loading with optimized sizes (640px to 3840px)
+   - Production domain allowlisting for security (`creavibe.pro`, `*.creavibe.pro`)
+   - Clerk image integration with approved domains (`images.clerk.dev`, `img.clerk.com`)
+   - Multiple image sizes for different use cases (16px to 384px)
    - Consider Cloudinary for advanced image processing
 
 ## Monitoring and Logging
@@ -398,10 +486,17 @@ Monitor:
 
 ### Application Security
 - [ ] HTTPS enabled (automatic on Vercel/Netlify)
-- [ ] Security headers configured (handled by middleware)
+- [ ] Security headers configured (automatically applied via next.config.js)
+  - [ ] X-Frame-Options: DENY
+  - [ ] X-Content-Type-Options: nosniff
+  - [ ] Referrer-Policy: strict-origin-when-cross-origin
+  - [ ] Permissions-Policy: camera=(), microphone=(), geolocation=()
 - [ ] Rate limiting enabled
 - [ ] Input validation on all forms
 - [ ] SQL injection prevention (parameterized queries)
+- [ ] Powered-By header removed for security
+- [ ] Image domain allowlisting configured for production security
+- [ ] Remote pattern matching for external images
 
 ### Authentication Security
 - [ ] Live Clerk keys configured

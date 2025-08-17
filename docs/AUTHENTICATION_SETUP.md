@@ -8,7 +8,7 @@ The authentication system provides secure access to the admin dashboard with the
 
 - **Clerk Authentication**: Modern authentication with built-in security features
 - **Role-Based Access Control**: Database-backed admin role verification
-- **Automatic User Management**: Webhook-driven user synchronization
+- **Webhook Integration**: Optional webhook event logging and extensible user management
 - **Protected Routes**: Middleware-based route protection
 - **Comprehensive Testing**: Full test suite for authentication flows
 
@@ -32,9 +32,9 @@ The authentication system provides secure access to the admin dashboard with the
    - Rate limiting and security headers
 
 4. **Webhook Handler** (`app/api/webhooks/clerk/route.ts`)
-   - Automatic user synchronization
-   - Database user management
-   - Event-driven admin creation/updates
+   - Basic webhook event logging and verification
+   - Extensible structure for custom user management logic
+   - Event handling for user lifecycle events
 
 5. **Authentication Testing** (`lib/auth-test.ts`, `scripts/test-auth-setup.ts`)
    - Comprehensive test suite
@@ -117,14 +117,70 @@ This runs a comprehensive test suite that validates:
 - Webhook configuration
 - Environment variables
 
-### 4. Clerk Webhook Configuration
+### 4. JWT Template Configuration
 
-Configure the Clerk webhook in your Clerk dashboard:
+For secure API authentication and database integration (especially with NeonDB), configure a JWT template in Clerk:
+
+#### Create JWT Template in Clerk Dashboard
+
+Go to **Clerk Dashboard** → **JWT Templates** → **New template**
+
+**Basic Information:**
+- **Name**: `neon` (for NeonDB integration)
+- **Token lifetime**: `60` seconds (short-lived for security)
+- **Allowed clock skew**: `5` seconds
+
+**Issuer Configuration:**
+- **Issuer**: `https://clerk.creavibe.pro`
+- **JWKS Endpoint**: `https://clerk.creavibe.pro/.well-known/jwks.json`
+
+**Custom Signing Key:** ✅ Enabled
+
+#### JWT Template Claims Configuration
+
+Add these custom claims to your JWT template:
+
+```json
+{
+  "iss": "https://clerk.creavibe.pro",
+  "sub": "{{user.id}}",
+  "aud": "neon",
+  "exp": "{{token.exp}}",
+  "iat": "{{token.iat}}",
+  "nbf": "{{token.nbf}}",
+  "user_id": "{{user.id}}",
+  "email": "{{user.primary_email_address.email_address}}",
+  "role": "admin",
+  "username": "{{user.username}}",
+  "first_name": "{{user.first_name}}",
+  "last_name": "{{user.last_name}}",
+  "image_url": "{{user.image_url}}",
+  "created_at": "{{user.created_at}}",
+  "updated_at": "{{user.updated_at}}"
+}
+```
+
+#### Environment Variables for JWT
+
+Add the JWT template configuration to your environment:
+
+```bash
+# JWT Template Configuration
+CLERK_JWT_TEMPLATE_NAME=neon
+NEXT_PUBLIC_CLERK_JWT_ISSUER=https://clerk.creavibe.pro
+NEXT_PUBLIC_CLERK_JWKS_URL=https://clerk.creavibe.pro/.well-known/jwks.json
+```
+
+### 5. Clerk Webhook Configuration
+
+Configure the Clerk webhook in your Clerk dashboard for event logging:
 
 1. Go to Webhooks in your Clerk dashboard
-2. Add endpoint: `https://yourdomain.com/api/webhooks/clerk`
-3. Select events: `user.created`, `user.updated`, `user.deleted`
-4. Copy the webhook secret to `CLERK_WEBHOOK_SECRET`
+2. Add endpoint: `https://creavibe.pro/api/webhooks/clerk`
+3. Select events: `user.created`, `user.updated`, `user.deleted`, `session.created`, `session.ended`
+4. Copy the webhook secret to `CLERK_WEBHOOK_SECRET` (already configured: `whsec_VaOtczmzcx5ENueijEw9otC6cMazbnVK`)
+
+**Note**: The current webhook implementation provides basic event logging and verification. Extend the webhook handler in `app/api/webhooks/clerk/route.ts` to add custom user management logic as needed.
 
 ## Authentication Flow
 
@@ -132,8 +188,8 @@ Configure the Clerk webhook in your Clerk dashboard:
 
 1. User accesses `/admin/login`
 2. Clerk handles authentication UI and process
-3. On successful authentication, Clerk webhook fires
-4. Webhook handler creates/updates admin record in database
+3. On successful authentication, Clerk webhook fires (optional logging)
+4. Admin role verification handled by `AdminService` during protected route access
 5. User is redirected to `/admin/dashboard`
 
 ### Route Protection
@@ -275,10 +331,12 @@ The test suite covers:
    - Check network connectivity to NeonDB
    - Ensure database exists and is accessible
 
-3. **Webhook Not Working**
+3. **Webhook Not Working** (If Using Webhooks)
    - Verify webhook URL is accessible from internet
    - Check `CLERK_WEBHOOK_SECRET` matches Clerk dashboard
    - Review webhook logs in Clerk dashboard
+   - Check server logs for webhook processing errors
+   - **Note**: Webhooks are optional - admin functionality works without them
 
 4. **Authentication Redirects**
    - Ensure Clerk URLs are properly configured

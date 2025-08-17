@@ -3,42 +3,56 @@ import { requireAdminAuth } from '@/lib/clerk'
 import { validateProjectData, SECURITY_HEADERS } from '@/lib/security'
 import { db } from '@/lib/db'
 import { Project, ApiResponse, ProjectFormData, ErrorResponse } from '@/lib/types'
+import { withCache, CacheConfig, createCacheHeaders, invalidateCache } from '@/lib/cache'
 
 // GET /api/projects - Fetch all projects (public endpoint)
 export async function GET(request: NextRequest) {
   try {
-    // Add security headers
-    const headers = new Headers(SECURITY_HEADERS)
-    headers.set('Content-Type', 'application/json')
-
     // Parse query parameters
     const { searchParams } = new URL(request.url)
     const featured = searchParams.get('featured')
 
-    let query = `
-      SELECT 
-        id,
-        title,
-        description,
-        tech_stack as "techStack",
-        github_url as "githubUrl",
-        demo_url as "demoUrl",
-        image_url as "imageUrl",
-        featured,
-        created_at as "createdAt",
-        updated_at as "updatedAt"
-      FROM projects
-    `
+    // Determine cache key and config
+    const cacheKey = featured === 'true' ? CacheConfig.FEATURED_PROJECTS.key : CacheConfig.PROJECTS.key
+    const cacheTTL = featured === 'true' ? CacheConfig.FEATURED_PROJECTS.ttl : CacheConfig.PROJECTS.ttl
 
-    // Filter by featured if requested
-    if (featured === 'true') {
-      query += ' WHERE featured = true'
-    }
+    // Fetch projects with caching
+    const projects = await withCache(cacheKey, cacheTTL, async () => {
+      let query = `
+        SELECT 
+          id,
+          title,
+          description,
+          tech_stack as "techStack",
+          github_url as "githubUrl",
+          demo_url as "demoUrl",
+          image_url as "imageUrl",
+          featured,
+          created_at as "createdAt",
+          updated_at as "updatedAt"
+        FROM projects
+      `
 
-    // Order by featured first, then by creation date
-    query += ' ORDER BY featured DESC, created_at DESC'
+      // Filter by featured if requested
+      if (featured === 'true') {
+        query += ' WHERE featured = true'
+      }
 
-    const projects = await db.query<Project>(query)
+      // Order by featured first, then by creation date
+      query += ' ORDER BY featured DESC, created_at DESC'
+
+      return await db.query<Project>(query)
+    })
+
+    // Add security and cache headers
+    const headers = new Headers(SECURITY_HEADERS)
+    headers.set('Content-Type', 'application/json')
+    
+    // Add cache headers for CDN and browser caching
+    const cacheHeaders = createCacheHeaders(300, 600) // 5 min cache, 10 min stale-while-revalidate
+    Object.entries(cacheHeaders).forEach(([key, value]) => {
+      headers.set(key, value)
+    })
 
     return NextResponse.json<ApiResponse<Project[]>>({
       success: true,
@@ -136,6 +150,9 @@ export async function POST(request: NextRequest) {
     ])
 
     const newProject = result[0]
+
+    // Invalidate project caches after creation
+    invalidateCache('projects:')
 
     return NextResponse.json<ApiResponse<Project>>({
       success: true,

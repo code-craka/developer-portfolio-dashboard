@@ -3,6 +3,7 @@ import { requireAdminAuth } from '@/lib/clerk'
 import { validateProjectData, SECURITY_HEADERS } from '@/lib/security'
 import { db } from '@/lib/db'
 import { Project, ApiResponse, ProjectFormData, ErrorResponse } from '@/lib/types'
+import { invalidateCache } from '@/lib/cache'
 import { unlink } from 'fs/promises'
 import path from 'path'
 
@@ -163,6 +164,9 @@ export async function PUT(
     const result = await db.query<Project>(updateQuery, updateValues)
     const updatedProject = result[0]
 
+    // Invalidate project caches after update
+    invalidateCache('projects:')
+
     return NextResponse.json<ApiResponse<Project>>({
       success: true,
       data: updatedProject,
@@ -278,6 +282,9 @@ export async function DELETE(
         console.warn(`Failed to delete image file for project ${projectId}:`, fileError)
       }
     }
+
+    // Invalidate project caches after deletion
+    invalidateCache('projects:')
 
     return NextResponse.json<ApiResponse>({
       success: true,

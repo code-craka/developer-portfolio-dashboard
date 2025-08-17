@@ -713,6 +713,58 @@ Delete a specific image file. **Requires admin authentication.**
 }
 ```
 
+## Webhook Endpoints
+
+### POST /api/webhooks/clerk
+
+Clerk webhook endpoint for user lifecycle events. **Public endpoint with signature verification.**
+
+**Headers Required:**
+- `svix-id`: Webhook message ID
+- `svix-timestamp`: Webhook timestamp
+- `svix-signature`: Webhook signature for verification
+
+**Supported Events:**
+- `user.created`: User registration
+- `user.updated`: User profile updates
+- `user.deleted`: User account deletion
+- `session.created`: User session start
+- `session.ended`: User session end
+
+**Request Body:** (Example for user.created)
+```json
+{
+  "data": {
+    "id": "user_abc123",
+    "email_addresses": [
+      {
+        "email_address": "user@example.com"
+      }
+    ],
+    "first_name": "John",
+    "last_name": "Doe"
+  },
+  "type": "user.created"
+}
+```
+
+**Response:**
+```json
+{
+  "received": true
+}
+```
+
+**Status Codes:**
+- `200`: Webhook processed successfully
+- `400`: Missing headers or verification failed
+
+**Implementation Notes:**
+- Current implementation provides basic event logging and verification
+- Webhook secret (`CLERK_WEBHOOK_SECRET`) required for signature verification
+- Extend the webhook handler to add custom user management logic as needed
+- All events are logged to console for debugging and monitoring
+
 ## Admin User Endpoints
 
 ### GET /api/admin/profile
@@ -731,6 +783,75 @@ Get current admin user profile. **Requires authentication.**
     "role": "admin",
     "createdAt": "2025-01-15T10:30:00.000Z",
     "updatedAt": "2025-01-15T10:30:00.000Z"
+  }
+}
+```
+
+## Error Logging System
+
+The application includes a comprehensive error logging system (`lib/error-logging.ts`) that provides:
+
+### Security Features
+- **Cryptographically Secure Session IDs**: Uses `crypto.randomUUID()` and `crypto.getRandomValues()` for secure session tracking
+- **Fallback Mechanisms**: Multiple layers of random number generation with secure fallbacks
+- **Client-Side Error Capture**: Automatic detection of JavaScript errors and promise rejections
+- **Server-Side Integration**: Centralized error collection via `/api/errors` endpoint
+
+### Error Monitoring Capabilities
+- **API Error Tracking**: Detailed logging of API failures with request/response context
+- **Validation Error Logging**: Form validation failures with sanitized data
+- **User Action Monitoring**: User interaction errors with session correlation
+- **Performance Metrics**: Error frequency and distribution analysis
+- **Persistent Storage**: Local storage backup for debugging and offline analysis
+
+### Error Logging Endpoint
+
+**POST** `/api/errors`
+
+Accepts error logs from the client-side error logging system for centralized monitoring.
+
+**Request Body:**
+```json
+{
+  "id": "error_1642234567890_abc123def",
+  "timestamp": "2025-01-15T10:30:00.000Z",
+  "level": "error",
+  "message": "API Error: GET /api/projects - 500 Internal Server Error",
+  "stack": "Error stack trace...",
+  "context": {
+    "type": "api_error",
+    "endpoint": "/api/projects",
+    "method": "GET",
+    "status": 500,
+    "userAgent": "Mozilla/5.0...",
+    "url": "https://example.com/admin/projects"
+  },
+  "sessionId": "session_1642234567890_550e8400-e29b-41d4-a716-446655440000"
+}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "message": "Error logged successfully"
+}
+```
+
+### Usage in Components
+
+```typescript
+import { useErrorLogger } from '@/lib/error-logging'
+
+function MyComponent() {
+  const { logError, logActionError } = useErrorLogger()
+  
+  const handleApiCall = async () => {
+    try {
+      // API call
+    } catch (error) {
+      logActionError('project_creation', error, { projectId: 123 })
+    }
   }
 }
 ```

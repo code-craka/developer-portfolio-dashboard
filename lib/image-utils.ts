@@ -53,9 +53,27 @@ export function getImageInfo(filePath: string): ImageInfo | null {
  */
 export async function deleteImage(imageUrl: string): Promise<boolean> {
   try {
-    // Remove leading slash if present
+    // Sanitize the URL to prevent directory traversal
     const cleanUrl = imageUrl.startsWith('/') ? imageUrl.slice(1) : imageUrl
-    const filePath = path.join(process.cwd(), 'public', cleanUrl)
+    const sanitizedUrl = cleanUrl.replace(/\.\./g, '').replace(/\/+/g, '/')
+    
+    // Ensure the path is within uploads directory
+    if (!sanitizedUrl.startsWith('uploads/')) {
+      console.warn(`Invalid image path for deletion: ${sanitizedUrl}`)
+      return false
+    }
+    
+    const filePath = path.join(process.cwd(), 'public', sanitizedUrl)
+    
+    // Additional security: ensure the resolved path is still within public/uploads
+    const publicDir = path.join(process.cwd(), 'public', 'uploads')
+    const resolvedPath = path.resolve(filePath)
+    const resolvedPublicDir = path.resolve(publicDir)
+    
+    if (!resolvedPath.startsWith(resolvedPublicDir)) {
+      console.warn(`Path traversal attempt detected: ${imageUrl}`)
+      return false
+    }
     
     if (existsSync(filePath)) {
       await unlink(filePath)
@@ -322,13 +340,35 @@ export function generateImagePlaceholder(width: number, height: number): string 
 export async function validateImageUrl(imageUrl: string): Promise<boolean> {
   try {
     if (imageUrl.startsWith('/uploads/')) {
+      // Sanitize the path to prevent directory traversal
+      const sanitizedPath = imageUrl.replace(/\.\./g, '').replace(/\/+/g, '/')
+      
+      // Ensure the path stays within the uploads directory
+      if (!sanitizedPath.startsWith('/uploads/')) {
+        return false
+      }
+      
       // Local image - check if file exists
-      const filePath = path.join(process.cwd(), 'public', imageUrl)
+      const filePath = path.join(process.cwd(), 'public', sanitizedPath)
+      
+      // Additional security: ensure the resolved path is still within public/uploads
+      const publicDir = path.join(process.cwd(), 'public', 'uploads')
+      const resolvedPath = path.resolve(filePath)
+      const resolvedPublicDir = path.resolve(publicDir)
+      
+      if (!resolvedPath.startsWith(resolvedPublicDir)) {
+        return false
+      }
+      
       return existsSync(filePath)
     } else if (imageUrl.startsWith('http')) {
-      // External image - we'll assume it's valid for now
-      // In a production app, you might want to make an HTTP request to verify
-      return true
+      // External image - validate URL format and protocol
+      try {
+        const url = new URL(imageUrl)
+        return url.protocol === 'http:' || url.protocol === 'https:'
+      } catch {
+        return false
+      }
     }
     
     return false

@@ -127,19 +127,25 @@ export function validateExperienceData(data: ExperienceFormData): { valid: boole
 
 function isValidUrl(url: string): boolean {
   try {
-    new URL(url)
-    return true
+    const parsedUrl = new URL(url)
+    // Only allow http and https protocols
+    return parsedUrl.protocol === 'http:' || parsedUrl.protocol === 'https:'
   } catch {
     return false
   }
 }
 
+// Export the function for use in other modules
+export { isValidUrl }
+
 // Sanitize input to prevent XSS
 export function sanitizeInput(input: string): string {
+  if (!input || typeof input !== 'string') return ''
+  
   return input
     .replace(/[<>]/g, '') // Remove potential HTML tags
     .replace(/javascript:/gi, '') // Remove javascript: protocol
-    .replace(/on\w+=/gi, '') // Remove event handlers
+    .replace(/on[a-zA-Z]+=/gi, '') // Remove event handlers (fixed ReDoS)
     .trim()
 }
 
@@ -175,6 +181,21 @@ export function validateFileUpload(file: File, isLogo: boolean = false): { valid
 
 // Generate secure random string
 export function generateSecureToken(length: number = 32): string {
+  // Use crypto.getRandomValues for secure random generation
+  if (typeof crypto !== 'undefined' && crypto.getRandomValues) {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+    const array = new Uint8Array(length)
+    crypto.getRandomValues(array)
+    
+    let result = ''
+    for (let i = 0; i < length; i++) {
+      result += chars.charAt(array[i] % chars.length)
+    }
+    return result
+  }
+  
+  // Fallback for environments without crypto (should not be used in production)
+  console.warn('Using insecure random generation - crypto.getRandomValues not available')
   const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
   let result = ''
 
@@ -220,10 +241,13 @@ export function generateSecureFileName(originalName: string): string {
 
 // SQL injection prevention helper
 export function sanitizeSqlInput(input: string): string {
+  if (!input || typeof input !== 'string') return ''
+  
   return input
     .replace(/['";\\]/g, '') // Remove SQL injection characters
-    .replace(/--/g, '') // Remove SQL comments
-    .replace(/\/\*/g, '') // Remove SQL block comments start
-    .replace(/\*\//g, '') // Remove SQL block comments end
+    .replace(/--+/g, '') // Remove SQL comments (fixed multi-character)
+    .replace(/\/\*[\s\S]*?\*\//g, '') // Remove SQL block comments (complete pattern)
+    .replace(/union\s+select/gi, '') // Remove UNION SELECT attempts
+    .replace(/drop\s+table/gi, '') // Remove DROP TABLE attempts
     .trim()
 }
